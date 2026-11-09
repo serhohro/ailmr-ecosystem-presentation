@@ -11,8 +11,7 @@ This repository contains the **interactive presentation** for my AI Labor Market
 
 ## 🖥️ Live Demo
 You can view the live interactive presentation here (replace with your link):
-👉 **[AILMR Presentation](https://your-username.github.io/your-repo-name/)**
-
+👉 **[AILMR Presentation](https://serhohro.github.io/ailmr-ecosystem-presentation/)**
 *(Note: To view locally, simply clone the repo and open `index.html` in any modern web browser).*
 
 ---
