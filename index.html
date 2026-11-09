@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Презентація AILMR — AI Labor Market Research</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background-attachment: fixed;
+            scroll-behavior: smooth;
+        }
+
+        /* --- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ --- */
+        .lang-switch {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            display: flex; gap: 5px; background: rgba(255, 255, 255, 0.95);
+            padding: 5px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        .lang-btn {
+            background: transparent; border: none; padding: 8px 12px; border-radius: 6px;
+            font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+            color: #64748b; transition: all 0.2s;
+        }
+        .lang-btn:hover { background: #e2e8f0; color: #1e293b; }
+        .lang-btn.active { background: #1f77b4; color: white; box-shadow: 0 2px 8px rgba(31, 119, 180, 0.4); }
+
+        /* Скрываем все языки по умолчанию */
+        [lang-content] { display: none !important; }
+        body[data-lang="ru"] [lang-content="ru"] { display: block !important; }
+        body[data-lang="ua"] [lang-content="ua"] { display: block !important; }
+        body[data-lang="en"] [lang-content="en"] { display: block !important; }
+        body[data-lang="de"] [lang-content="de"] { display: block !important; }
+        /* Исключение для inline-элементов (span) */
+        span[lang-content] { display: inline !important; }
+        body[data-lang="ru"] span[lang-content="ua"], body[data-lang="ru"] span[lang-content="en"], body[data-lang="ru"] span[lang-content="de"] { display: none !important; }
+        body[data-lang="ua"] span[lang-content="ru"], body[data-lang="ua"] span[lang-content="en"], body[data-lang="ua"] span[lang-content="de"] { display: none !important; }
+        body[data-lang="en"] span[lang-content="ru"], body[data-lang="en"] span[lang-content="ua"], body[data-lang="en"] span[lang-content="de"] { display: none !important; }
+        body[data-lang="de"] span[lang-content="ru"], body[data-lang="de"] span[lang-content="ua"], body[data-lang="de"] span[lang-content="en"] { display: none !important; }
+
+        .slide {
+            width: 1280px;
+            height: 720px;
+            background: white;
+            margin: 40px auto;
+            padding: 50px 70px;
+            box-sizing: border-box;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #d0d5dd;
+        }
+
+        body { counter-reset: slide-counter; }
+        .slide { counter-increment: slide-counter; }
+
+        .slide::after {
+            content: counter(slide-counter);
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .title-slide::after,
+        .final-slide::after { display: none; }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1f77b4, #8b5cf6, #1f77b4);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .anim-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .anim-up.visible { animation: fadeInUp 0.6s ease-out forwards; }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        h1 { color: #1f77b4; font-size: 48px; margin-bottom: 10px; }
+        h2 { color: #333; font-size: 32px; margin-bottom: 10px; border-bottom: 3px solid #1f77b4; padding-bottom: 8px; flex-shrink: 0; }
+        p { font-size: 20px; line-height: 1.5; color: #444; margin: 8px 0; }
+        ul { font-size: 20px; line-height: 1.6; color: #444; margin-bottom: 10px; }
+        li { margin-bottom: 12px; }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
+            color: white;
+            position: relative;
+        }
+
+        .title-slide::before, .title-slide::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+        }
+        .title-slide::before {
+            width: 400px; height: 400px;
+            background: rgba(139, 92, 246, 0.4);
+            top: -100px; left: -100px;
+        }
+        .title-slide::after {
+            width: 300px; height: 300px;
+            background: rgba(61, 184, 255, 0.4);
+            bottom: -50px; right: -50px;
+        }
+
+        .title-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title-slide h1 { color: white; font-size: 64px; margin-bottom: 5px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .title-slide p { color: #cbd5e1; font-size: 24px; margin-bottom: 40px; }
+
+        .acronym-container {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 50px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .acronym-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 20px 25px;
+            text-align: center;
+            min-width: 130px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .acronym-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(139, 92, 246, 0.8);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+            cursor: pointer;
+        }
+
+        .acronym-word { transition: all 0.3s ease; opacity: 0.8; }
+        .acronym-translation { transition: all 0.3s ease; opacity: 0.7; }
+
+        .acronym-card:hover .acronym-word {
+            opacity: 1;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .acronym-card:hover .acronym-translation {
+            opacity: 1;
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .acronym-card:hover .acronym-letter { transform: scale(1.1); transition: transform 0.3s ease; }
+
+        .acronym-letter {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .acronym-word { font-size: 16px; font-weight: 600; color: #f8fafc; letter-spacing: 0.5px; }
+
+        .acronym-translation {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 6px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 6px;
+        }
+
+        .author-info { margin-top: 20px; font-size: 20px; color: #94a3b8; position: relative; z-index: 1; }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+            margin-top: 10px;
+            min-height: 0;
+        }
+
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .quote {
+            background: #e8f4fd;
+            border-left: 5px solid #1f77b4;
+            padding: 12px 15px;
+            font-size: 16px;
+            font-style: italic;
+            color: #004085;
+            margin-top: 15px;
+        }
+
+        .orbit-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.65);
+            margin-top: -80px;
+            margin-bottom: -100px;
+            min-height: 300px;
+        }
+
+        .orbit-center {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #1f77b4, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+            z-index: 10;
+            position: absolute;
+            animation: pulse-center 3s infinite alternate;
+        }
+
+        @keyframes pulse-center {
+            0% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.4); }
+            100% { box-shadow: 0 0 60px rgba(139, 92, 246, 0.8); }
+        }
+
+        .orbit-ring { position: absolute; border-radius: 50%; border: 1px dashed #cbd5e1; }
+        .ring-inner { width: 320px; height: 320px; }
+        .ring-outer { width: 520px; height: 520px; }
+
+        .orbit-item {
+            position: absolute;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.2s;
+        }
+        .orbit-item:hover {
+            transform: scale(1.15) !important;
+            background: #e8f4fd;
+            z-index: 30 !important;
+            box-shadow: 0 5px 15px rgba(31, 119, 180, 0.3);
+        }
+
+        .orbit-item b { color: #1f77b4; font-size: 11px; }
+        .orbit-item .num {
+            background: #e0f2fe;
+            color: #0284c7;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .live-matrix-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .matrix-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.15);
+        }
+
+        .matrix-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-evenly;
+            overflow: hidden;
+        }
+
+        .matrix-col {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, #00ffff, transparent);
+            box-shadow: 0 0 25px #00ffff;
+            animation: scan 2.5s linear infinite;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .scanner-text {
+            position: relative;
+            z-index: 20;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 16px 32px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3) inset;
+        }
+
+        .scanner-title {
+            color: #00ffff;
+            font-size: 14px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .scanner-subtext {
+            display: block;
+            font-size: 12px;
+            color: #a4b8d0;
+            font-weight: 400;
+            margin-top: 8px;
+            text-shadow: none;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+            flex: 1;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            border-color: #1f77b4;
+        }
+
+        .feature-icon { font-size: 32px; margin-bottom: 8px; }
+
+        .feature-title {
+            font-weight: 800;
+            color: #1f77b4;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .feature-text { font-size: 13px; color: #64748b; line-height: 1.4; }
+
+        .bar-chart { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .bar-row { display: flex; align-items: center; gap: 15px; }
+        .bar-label { width: 180px; font-weight: 600; font-size: 16px; text-align: right; color: #334155; }
+        .bar-track { flex: 1; background: #e2e8f0; height: 24px; border-radius: 12px; overflow: hidden; }
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .table-simple { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 15px; }
+        .table-simple th, .table-simple td { padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .table-simple th { background: #f8fafc; font-weight: 800; color: #1e293b; border-bottom: 2px solid #cbd5e1; }
+        .table-simple tr:hover { background: #f1f5f9; }
+        .badge { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 13px; }
+
+        .final-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
+            color: white;
+            padding: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+        .final-slide h1 { color: white; font-size: 56px; margin-bottom: 10px; cursor: pointer; transition: all 0.5s; }
+        .final-slide h1:hover { color: #c084fc !important; text-shadow: 0 0 20px rgba(192, 132, 252, 0.8); transform: scale(1.05); }
+        .final-slide p { color: #cbd5e1; font-size: 22px; }
+        .final-slide .quote {
+            background: rgba(255,255,255,0.08);
+            border-left: 5px solid #8b5cf6;
+            color: #e2e8f0;
+            font-size: 18px;
+            font-style: italic;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .skills-grouped-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; flex: 1; overflow: visible !important; }
+
+        .skill-group {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .skill-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-color: #cbd5e1;
+        }
+
+        .skill-group-title {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+
+        .skill-tag {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-block;
+            position: relative;
+            cursor: help;
+        }
+
+        .skill-tag:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        /* --- ТУЛТИПЫ ДЛЯ СКИЛЛОВ --- */
+        .skill-tag::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 130%;
+            left: 0;
+            background: #1e293b;
+            color: #f8fafc;
+            font-size: 12px;
+            font-weight: 400;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .skill-tag::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 15px;
+            border: 6px solid transparent;
+            border-top-color: #1e293b;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .skill-tag:hover::after,
+        .skill-tag:hover::before {
+            opacity: 1;
+            visibility: visible;
+            bottom: 110%;
+        }
+
+        /* --- ТУЛТИП ДЛЯ ТЕКСТА (IDF-скор) --- */
+        .tooltip-text {
+            position: relative;
+            border-bottom: 2px dotted #3b82f6;
+            cursor: help;
+            color: #1f77b4;
+            font-weight: 600;
+        }
+
+        .tooltip-text::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 10px 14px;
+            border-radius: 6px;
+            white-space: normal;
+            width: 250px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tooltip-text::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #1e293b;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .tooltip-text:hover::after,
+        .tooltip-text:hover::before {
+            opacity: 1;
+            visibility: visible;
+            bottom: 130%;
+        }
+        
+        .slide .anim-up[style*="display: grid"] > div { transition: all 0.3s ease; background-color: #ffffff; }
+        .slide .anim-up[style*="display: grid"] > div:hover {
+            transform: translateY(-5px) scale(1.02);
+            background-color: #f0f7ff !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 10px 20px rgba(59, 130, 246, 0.15) !important;
+        }
+
+        /* Контейнер для потяга (схований за замовчуванням) */
+        .train-container {
+            position: absolute;
+            bottom: 50px;
+            left: -200px;
+            font-size: 60px;
+            opacity: 0;
+            transition: all 1.5s linear;
+            z-index: 100;
+        }
+
+        .train-container.go { animation: driveTrain 3s forwards; }
+
+        @keyframes driveTrain {
+            0% { left: -200px; opacity: 1; }
+            10% { opacity: 1; }
+            100% { left: 110%; opacity: 0; }
+        }
+
+        .collapsing-content.shrink {
+            transform: scale(0.1) translateY(100px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s;
+        }
+        
+        #final-author.shrink { opacity: 0; transition: opacity 0.5s; }
+        .clickable-title.shrink { opacity: 0; transform: scale(0.5); pointer-events: none; }
+    </style>
+</head>
+<body data-lang="ru">
+
+<!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
+<div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" onclick="setLang('ua')">UA</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('de')">DE</button>
+</div>
+
+<!-- ================= СЛАЙД 1: ТИТУЛ ================= -->
+<div class="slide title-slide">
+    <div class="title-content">
+        <h1>AI Labor Market Research</h1>
+        <p>
+            <span lang-content="ru">Исследование рынка труда в сфере AI Business Automation в Германии</span>
+            <span lang-content="ua">Дослідження ринку праці у сфері AI Business Automation в Німеччині</span>
+            <span lang-content="en">Research of the labor market in AI Business Automation in Germany</span>
+            <span lang-content="de">Untersuchung des Arbeitsmarktes für AI Business Automation in Deutschland</span>
+        </p>
+
+        <div class="acronym-container">
+            <div class="acronym-card"><div class="acronym-letter">AI</div><div class="acronym-word">Artificial Intelligence</div><div class="acronym-translation"><span lang-content="ru">Искусственный интеллект</span><span lang-content="ua">Штучний інтелект</span><span lang-content="en">Artificial Intelligence</span><span lang-content="de">Künstliche Intelligenz</span></div></div>
+            <div class="acronym-card"><div class="acronym-letter">L</div><div class="acronym-word">Labor</div><div class="acronym-translation"><span lang-content="ru">Труд</span><span lang-content="ua">Праця</span><span lang-content="en">Labor</span><span lang-content="de">Arbeit</span></div></div>
+            <div class="acronym-card"><div class="acronym-letter">M</div><div class="acronym-word">Market</div><div class="acronym-translation"><span lang-content="ru">Рынок</span><span lang-content="ua">Ринок</span><span lang-content="en">Market</span><span lang-content="de">Markt</span></div></div>
+            <div class="acronym-card"><div class="acronym-letter">R</div><div class="acronym-word">Research</div><div class="acronym-translation"><span lang-content="ru">Исследование</span><span lang-content="ua">Дослідження</span><span lang-content="en">Research</span><span lang-content="de">Forschung</span></div></div>
+        </div>
+
+        <div class="author-info"><p>Автор / Author / Autor: Serhiy Hromyko</p></div>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 2 ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Что представляет собой программа?</span>
+        <span lang-content="ua">Що являє собою програма?</span>
+        <span lang-content="en">What is the program?</span>
+        <span lang-content="de">Was ist das Programm?</span>
+    </h2>
+
+    <div class="anim-up delay-1" style="font-size: 22px; line-height: 1.5; color: #333; margin-bottom: 20px; background: #f8fafc; padding: 15px 20px; border-left: 5px solid #1f77b4; border-radius: 0 8px 8px 0;">
+        <span lang-content="ru"><b>AILMR</b> — это аналитический веб-инструмент, который автоматизирует <b>поиск, фильтрацию и визуализацию</b> вакансий на рынке труда Германии в одном интерфейсе.</span>
+        <span lang-content="ua"><b>AILMR</b> — це аналітичний веб-інструмент, який автоматизує <b>пошук, фільтрацію та візуалізацію</b> вакансій на ринку праці Німеччини в одному інтерфейсі.</span>
+        <span lang-content="en"><b>AILMR</b> is an analytical web tool that automates the <b>search, filtering, and visualization</b> of job vacancies in the German labor market in a single interface.</span>
+        <span lang-content="de"><b>AILMR</b> ist ein analytisches Web-Tool, das die <b>Suche, Filterung und Visualisierung</b> von Stellenangeboten auf dem deutschen Arbeitsmarkt in einer einzigen Oberfläche automatisiert.</span>
+    </div>
+
+    <div class="anim-up delay-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex: 1;">
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">🎯</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Для соискателей</span><span lang-content="ua">Для шукачів</span><span lang-content="en">For job seekers</span><span lang-content="de">Für Jobsuchende</span></b>
+                <span lang-content="ru">Показывает, какие навыки чаще всего требуют работодатели.</span>
+                <span lang-content="ua">Показує, які навички найчастіше вимагають роботодавці.</span>
+                <span lang-content="en">Shows which skills are most frequently required by employers.</span>
+                <span lang-content="de">Zeigt, welche Fähigkeiten am häufigsten von Arbeitgebern gefordert werden.</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">📊</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Для аналитиков</span><span lang-content="ua">Для аналітиків</span><span lang-content="en">For analysts</span><span lang-content="de">Für Analysten</span></b>
+                <span lang-content="ru">Агрегирует тысячи вакансий, удаляет дубликаты и строит наглядные графики.</span>
+                <span lang-content="ua">Агрегує тисячі вакансій, видаляє дублікати та будує наочні графіки.</span>
+                <span lang-content="en">Aggregates thousands of vacancies, removes duplicates, and builds charts.</span>
+                <span lang-content="de">Aggregiert Tausende von Stellen, entfernt Duplikate und erstellt Diagramme.</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">🧠</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Глубокий анализ</span><span lang-content="ua">Глибокий аналіз</span><span lang-content="en">Deep analysis</span><span lang-content="de">Tiefenanalyse</span></b>
+                <span lang-content="ru">Анализирует топ навыков (Python, RPA, n8n) и выявляет альтернативные названия должностей.</span>
+                <span lang-content="ua">Аналізує топ навичок (Python, RPA, n8n) та виявляє альтернативні назви посад.</span>
+                <span lang-content="en">Analyzes top skills (Python, RPA, n8n) and identifies alternative job titles.</span>
+                <span lang-content="de">Analysiert Top-Skills (Python, RPA, n8n) und identifiziert alternative Berufsbezeichnungen.</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">🏷️</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Альтернативные названия</span><span lang-content="ua">Альтернативні назви</span><span lang-content="en">Alternative titles</span><span lang-content="de">Alternative Titel</span></b>
+                <span lang-content="ru">Определяет, под какими названиями должностей встречаются инструменты.</span>
+                <span lang-content="ua">Визначає, під якими назвами посад зустрічаються інструменти.</span>
+                <span lang-content="en">Determines under which job titles the tools appear.</span>
+                <span lang-content="de">Bestimmt, unter welchen Berufsbezeichnungen die Tools vorkommen.</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">⚡</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Экономия времени</span><span lang-content="ua">Економія часу</span><span lang-content="en">Time saving</span><span lang-content="de">Zeitersparnis</span></b>
+                <span lang-content="ru">Вместо ручного просмотра сайтов — готовый PDF-отчет.</span>
+                <span lang-content="ua">Замість ручного перегляду сайтів — готовий PDF-звіт.</span>
+                <span lang-content="en">Instead of manually browsing sites — a ready-made PDF report.</span>
+                <span lang-content="de">Anstatt Websites manuell zu durchsuchen — ein fertiger PDF-Bericht.</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">🌍</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Мультиязычность</span><span lang-content="ua">Багатомовність</span><span lang-content="en">Multilingual</span><span lang-content="de">Mehrsprachig</span></b>
+                <span lang-content="ru">Интерфейс на трех языках (RU / DE / EN).</span>
+                <span lang-content="ua">Інтерфейс на трьох мовах (RU / DE / EN).</span>
+                <span lang-content="en">Interface in three languages (RU / DE / EN).</span>
+                <span lang-content="de">Oberfläche in drei Sprachen (RU / DE / EN).</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">🗺️</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Геоаналитика</span><span lang-content="ua">Геоаналітика</span><span lang-content="en">Geospatial analysis</span><span lang-content="de">Geoanalyse</span></b>
+                <span lang-content="ru">Визуализирует географию вакансий на карте (включая специализированный модуль Гамбурга).</span>
+                <span lang-content="ua">Візуалізує географію вакансій на карті (включаючи спеціалізований модуль Гамбурга).</span>
+                <span lang-content="en">Visualizes the geography of vacancies on a map (including the specialized Hamburg module).</span>
+                <span lang-content="de">Visualisiert die Geografie der Stellenangebote auf einer Karte (einschließlich des spezialisierten Hamburg-Moduls).</span>
+            </div>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <div style="font-size: 24px; background: #e8f4fd; padding: 10px; border-radius: 10px; line-height: 1;">📄</div>
+            <div style="font-size: 15px; line-height: 1.4; color: #475569;">
+                <b style="color: #1e293b; display: block; margin-bottom: 4px; font-size: 16px;"><span lang-content="ru">Экспорт</span><span lang-content="ua">Експорт</span><span lang-content="en">Export</span><span lang-content="de">Export</span></b>
+                <span lang-content="ru">Позволяет выгрузить все данные в CSV (для Excel) или сгенерировать готовый PDF-отчёт.</span>
+                <span lang-content="ua">Дозволяє вивантажити всі дані в CSV (для Excel) або згенерувати готовий PDF-звіт.</span>
+                <span lang-content="en">Allows you to export all data to CSV (for Excel) or generate a ready-made PDF report.</span>
+                <span lang-content="de">Ermöglicht den Export aller Daten in CSV (für Excel) oder die Erstellung eines fertigen PDF-Berichts.</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 3 ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Цель и задачи проекта</span>
+        <span lang-content="ua">Мета та завдання проєкту</span>
+        <span lang-content="en">Project goals and objectives</span>
+        <span lang-content="de">Projektziele und -aufgaben</span>
+    </h2>
+    <ul class="anim-up delay-1">
+        <li><span lang-content="ru">Выяснить, под какими названиями работодатели ищут специалистов.</span><span lang-content="ua">З'ясувати, під якими назвами роботодавці шукають фахівців.</span><span lang-content="en">Find out under what titles employers are looking for specialists.</span><span lang-content="de">Finden Sie heraus, unter welchen Titeln Arbeitgeber nach Spezialisten suchen.</span></li>
+        <li><span lang-content="ru">Найти альтернативные названия должностей, связанные с AI Business Automation.</span><span lang-content="ua">Знайти альтернативні назви посад, пов'язані з AI Business Automation.</span><span lang-content="en">Find alternative job titles related to AI Business Automation.</span><span lang-content="de">Finden Sie alternative Berufsbezeichnungen im Zusammenhang mit AI Business Automation.</span></li>
+        <li><span lang-content="ru">Проанализировать количество вакансий по выявленным названиям.</span><span lang-content="ua">Проаналізувати кількість вакансій за виявленими назвами.</span><span lang-content="en">Analyze the number of vacancies for the identified titles.</span><span lang-content="de">Analysieren Sie die Anzahl der Stellenangebote für die identifizierten Titel.</span></li>
+        <li><span lang-content="ru">Исследовать требования к кандидатам и востребованные навыки.</span><span lang-content="ua">Дослідити вимоги до кандидатів та затребувані навички.</span><span lang-content="en">Research candidate requirements and in-demand skills.</span><span lang-content="de">Untersuchen Sie die Anforderungen an Bewerber und die gefragten Fähigkeiten.</span></li>
+        <li><span lang-content="ru">Выявить используемые инструменты и технологии для AI.</span><span lang-content="ua">Виявити використовувані інструменти та технології для AI.</span><span lang-content="en">Identify the tools and technologies used for AI.</span><span lang-content="de">Identifizieren Sie die verwendeten Tools und Technologien für KI.</span></li>
+        <li><span lang-content="ru"><b>Доп. задание:</b> проранжировать названия вакансий по частоте встречаемости 19 конкретных AI-скиллов (n8n, Claude, API и др.).</span><span lang-content="ua"><b>Дод. завдання:</b> проранжувати назви вакансій за частотою зустрічальності 19 конкретних AI-скілів (n8n, Claude, API тощо).</span><span lang-content="en"><b>Additional task:</b> rank job titles by the frequency of occurrence of 19 specific AI skills (n8n, Claude, API, etc.).</span><span lang-content="de"><b>Zusatzaufgabe:</b> Ordnen Sie die Berufsbezeichnungen nach der Häufigkeit des Auftretens von 19 spezifischen KI-Skills (n8n, Claude, API usw.).</span></li>
+    </ul>
+    <div class="quote anim-up delay-2">
+        <span lang-content="ru">«Моей целью было создать не просто парсер, а полноценный аналитический инструмент».</span>
+        <span lang-content="ua">«Моєю метою було створити не просто парсер, а повноцінний аналітичний інструмент».</span>
+        <span lang-content="en">"My goal was to create not just a parser, but a full-fledged analytical tool."</span>
+        <span lang-content="de">"Mein Ziel war es, nicht nur einen Parser zu erstellen, sondern ein vollwertiges analytisches Tool."</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 4 ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Исходная задача и первый каркас</span>
+        <span lang-content="ua">Початкове завдання та перший каркас</span>
+        <span lang-content="en">Initial task and first framework</span>
+        <span lang-content="de">Ausgangsaufgabe und erstes Framework</span>
+    </h2>
+    <div class="anim-up delay-1" style="font-size: 18px; line-height: 1.5; color: #444; margin-bottom: 15px;">
+        <span lang-content="ru">Всё началось с необходимости исследовать немецкий рынок труда. Для решения этой задачи я написал <b>первую версию программы на Python</b>. Это был базовый консольный скрипт.</span>
+        <span lang-content="ua">Все почалося з необхідності дослідити німецький ринок праці. Для вирішення цього завдання я написав <b>першу версію програми на Python</b>. Це був базовий консольний скрипт.</span>
+        <span lang-content="en">It all started with the need to research the German labor market. To solve this problem, I wrote the <b>first version of the program in Python</b>. It was a basic console script.</span>
+        <span lang-content="de">Alles begann mit der Notwendigkeit, den deutschen Arbeitsmarkt zu untersuchen. Um dieses Problem zu lösen, schrieb ich die <b>erste Version des Programms in Python</b>. Es war ein einfaches Konsolenskript.</span>
+    </div>
+
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА screen1 -->
+    <div class="image-container anim-up delay-2" style="flex: 1; padding: 10px;">
+        <img src="screen1.png" alt="Скриншот ошибки StepStone" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+    </div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px; margin-top: 10px;">
+        <span lang-content="ru"><b>Проблема:</b> Первая версия столкнулась с блокировкой Cloudflare (ошибка <code>RemoteDisconnected</code>). Сайт StepStone закрыл соединение, так как скрипт не мог обойти защиту от ботов.</span>
+        <span lang-content="ua"><b>Проблема:</b> Перша версія зіткнулася з блокуванням Cloudflare (помилка <code>RemoteDisconnected</code>). Сайт StepStone закрив з'єднання, оскільки скрипт не міг обійти захист від ботів.</span>
+        <span lang-content="en"><b>Problem:</b> The first version encountered a Cloudflare block (<code>RemoteDisconnected</code> error). The StepStone website closed the connection because the script could not bypass the bot protection.</span>
+        <span lang-content="de"><b>Problem:</b> Die erste Version stieß auf eine Cloudflare-Sperre (Fehler <code>RemoteDisconnected</code>). Die Website von StepStone schloss die Verbindung, da das Skript den Bot-Schutz nicht umgehen konnte.</span>
+    </div>
+</div>
+
+<!-- ================= НОВЫЙ СЛАЙД: ПЕРВАЯ ПРОГРАММА (КОНСОЛЬ) ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Первая версия: базовый анализ рынка</span>
+        <span lang-content="ua">Перша версія: базовий аналіз ринку</span>
+        <span lang-content="en">First version: basic market analysis</span>
+        <span lang-content="de">Erste Version: grundlegende Marktanalyse</span>
+    </h2>
+    
+    <div class="anim-up delay-1" style="font-size: 18px; line-height: 1.5; color: #444; margin-bottom: 15px;">
+        <span lang-content="ru">После обхода блокировок, первая консольная версия успешно заработала. Она отправляла запросы к API и выдавала первичную аналитику: находила вакансии, считала их количество и извлекала названия компаний.</span>
+        <span lang-content="ua">Після обходу блокувань, перша консольна версія успішно запрацювала. Вона надсилала запити до API і видавала первинну аналітику: знаходила вакансії, рахувала їх кількість і витягувала назви компаній.</span>
+        <span lang-content="en">After bypassing the blocks, the first console version worked successfully. It sent requests to the API and provided initial analytics: found vacancies, counted them, and extracted company names.</span>
+        <span lang-content="de">Nach der Umgehung der Sperren funktionierte die erste Konsolenversion erfolgreich. Sie sendete Anfragen an die API und lieferte erste Analysen: fand Stellenangebote, zählte sie und extrahierte Firmennamen.</span>
+    </div>
+
+    <div class="anim-up delay-2" style="flex: 1; background: #0f172a; border-radius: 10px; padding: 20px; font-family: 'Courier New', monospace; color: #10b981; overflow-y: auto; font-size: 13px; line-height: 1.4; border: 1px solid #334155; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); text-align: left;">
+        <div style="color: #94a3b8; margin-bottom: 15px;">AI Labor Market Research - Base<br>==================================================</div>
+        <span lang-content="ru">Начинаем сбор вакансий (источник: Arbeitsagentur)...</span>
+        <span lang-content="ua">Починаємо збір вакансій (джерело: Arbeitsagentur)...</span>
+        <span lang-content="en">Starting job collection (source: Arbeitsagentur)...</span>
+        <span lang-content="de">Beginne mit der Stellensammlung (Quelle: Arbeitsagentur)...</span>
+        <br><br>
+        Поиск / Search / Suche: <span style="color: #60a5fa;">AI Automation Specialist</span><br>
+        &nbsp;&nbsp;Найдено / Found / Gefunden: 24<br>
+        Поиск / Search / Suche: <span style="color: #60a5fa;">KI Automatisierung</span><br>
+        &nbsp;&nbsp;Найдено / Found / Gefunden: 25<br><br>
+        ==================================================<br>
+        РЕЗУЛЬТАТЫ / RESULTS / ERGEBNISSE<br>
+        ==================================================<br><br>
+        Топ названий должностей / Top job titles / Top-Berufsbezeichnungen:<br>
+        &nbsp;1: AI & Automation Specialist / AI Engineer bei HDI AG: 1<br>
+        &nbsp;2: Automation & AI Specialist bei Nexperia Germany GmbH: 1<br>
+        &nbsp;3: AI & Automation Specialist Prozessdigitalisierung bei WILAmed GmbH: 1<br>
+        &nbsp;4: Junior Specialist Automation & AI bei TecTake GmbH: 1<br>
+        &nbsp;5: Outbound Automation Specialist ? AI experienced bei Scopevisio AG: 1<br>
+        &nbsp;6: AI Video Creator & Automation Specialist bei urari: 1<br>
+        &nbsp;7: Marketing AI & Automation Specialist (d/m/w) - Lexware Office bei Haufe-Lexware GmbH & Co.KG: 1<br>
+        &nbsp;8: Junior Finance Automation & Controlling Specialist bei Schwarzwaldmilch GmbH Freiburg: 1<br>
+        &nbsp;9: IT & Automation Specialist im Insolvenz- & Unternehmensrecht bei Ghendler Ruvinskij Rechtsanwälte PartG mbB: 1<br>
+        <div style="color: #94a3b8; margin-top: 15px;">Сохранено в / Saved to / Gespeichert in: ai_automation_jobs.csv (49)</div>
+    </div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px; margin-top: 15px;">
+        <span lang-content="ru"><b>Результат:</b> Программа нашла 49 актуальных вакансий по двум запросам и сохранила их в CSV-файл для дальнейшего анализа. Это стало отправной точкой для создания полноценной экосистемы <b>AILMR</b>.</span>
+        <span lang-content="ua"><b>Результат:</b> Програма знайшла 49 актуальних вакансій за двома запитами і зберегла їх у CSV-файл для подальшого аналізу. Це стало відправною точкою для створення повноцінної екосистеми <b>AILMR</b>.</span>
+        <span lang-content="en"><b>Result:</b> The program found 49 current vacancies for two queries and saved them to a CSV file for further analysis. This was the starting point for creating a full-fledged <b>AILMR</b> ecosystem.</span>
+        <span lang-content="de"><b>Ergebnis:</b> Das Programm fand 49 aktuelle Stellenangebote für zwei Abfragen und speicherte sie in einer CSV-Datei zur weiteren Analyse. Dies war der Ausgangspunkt für die Erstellung eines vollwertigen <b>AILMR</b>-Ökosystems.</span>
+    </div>
+</div>
+<!-- ================= КОНЕЦ НОВОГО СЛАЙДА ================= -->
+
+<!-- ================= НОВЫЙ СЛАЙД: ИНТЕРФЕЙС (ФОРМА) ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Интерфейс: Настройка сбора данных</span>
+        <span lang-content="ua">Інтерфейс: Налаштування збору даних</span>
+        <span lang-content="en">Interface: Data collection setup</span>
+        <span lang-content="de">Schnittstelle: Einrichtung der Datenerfassung</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Пользователь может выбрать нужные источники (Arbeitsagentur, Indeed, LinkedIn), указать город и ключевые слова, а также включить проход по всем 14 запросам.</span>
+        <span lang-content="ua">Користувач може вибрати потрібні джерела (Arbeitsagentur, Indeed, LinkedIn), вказати місто та ключові слова, а також увімкнути прохід по всіх 14 запитах.</span>
+        <span lang-content="en">The user can select the desired sources (Arbeitsagentur, Indeed, LinkedIn), specify the city and keywords, and enable passing through all 14 queries.</span>
+        <span lang-content="de">Der Benutzer kann die gewünschten Quellen (Arbeitsagentur, Indeed, LinkedIn) auswählen, Stadt und Schlüsselwörter angeben und die Durchführung aller 14 Abfragen aktivieren.</span>
+    </p>
+    
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА screen3 -->
+    <div class="image-container anim-up delay-2" style="flex: 1; padding: 10px; background: #fff;">
+        <img src="screen3.png" alt="Форма анализа рынка" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+    </div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px; margin-top: 10px;">
+        <b><span lang-content="ru">Особенность:</span><span lang-content="ua">Особливість:</span><span lang-content="en">Feature:</span><span lang-content="de">Besonderheit:</span></b>
+        <span lang-content="ru">Гибкая настройка позволяет собирать как общую статистику по всей Германии, так и точечные данные для конкретного города (например, Гамбурга) с загрузкой полных описаний вакансий.</span>
+        <span lang-content="ua">Гнучке налаштування дозволяє збирати як загальну статистику по всій Німеччині, так і точкові дані для конкретного міста (наприклад, Гамбурга) із завантаженням повних описів вакансій.</span>
+        <span lang-content="en">Flexible settings allow you to collect both general statistics for all of Germany and targeted data for a specific city (e.g., Hamburg) with the loading of full job descriptions.</span>
+        <span lang-content="de">Die flexiblen Einstellungen ermöglichen es, sowohl allgemeine Statistiken für ganz Deutschland als auch gezielte Daten für eine bestimmte Stadt (z. B. Hamburg) mit dem Laden vollständiger Stellenbeschreibungen zu erfassen.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 5 ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Основные направления анализа</span>
+        <span lang-content="ua">Основні напрямки аналізу</span>
+        <span lang-content="en">Main areas of analysis</span>
+        <span lang-content="de">Hauptanalysebereiche</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Программа использует 14 запросов, выявляет альтернативные названия должностей и анализирует навыки по 8 категориям.</span>
+        <span lang-content="ua">Програма використовує 14 запитів, виявляє альтернативні назви посад і аналізує навички за 8 категоріями.</span>
+        <span lang-content="en">The program uses 14 queries, identifies alternative job titles, and analyzes skills across 8 categories.</span>
+        <span lang-content="de">Das Programm verwendet 14 Abfragen, identifiziert alternative Berufsbezeichnungen und analysiert Fähigkeiten in 8 Kategorien.</span>
+    </p>
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА screen2 -->
+    <div class="image-container anim-up delay-2">
+        <img src="screen2.png" alt="Скриншот таблицы результатов">
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 6: ОРБИТА ================= -->
+<div class="slide">
+    <h2 class="anim-up" style="margin-bottom: 30px;">
+        <span lang-content="ru">База из 14 предустановленных запросов</span>
+        <span lang-content="ua">База з 14 попередньо встановлених запитів</span>
+        <span lang-content="en">Database of 14 pre-installed queries</span>
+        <span lang-content="de">Datenbank mit 14 vorinstallierten Abfragen</span>
+    </h2>
+
+    <div class="orbit-container anim-up delay-1" id="orbit-container">
+        <div class="orbit-ring ring-inner"></div>
+        <div class="orbit-ring ring-outer"></div>
+
+        <div class="orbit-center">
+            14<br><span lang-content="ru">запросов</span><span lang-content="ua">запитів</span><span lang-content="en">queries</span><span lang-content="de">Abfragen</span>
+        </div>
+
+        <div class="orbit-item" data-radius="160" data-speed="1" data-angle="0"><span class="num">1</span> <b>AI Automation Specialist</b></div>
+        <div class="orbit-item" data-radius="160" data-speed="1" data-angle="60"><span class="num">2</span> <b>KI Automatisierung</b></div>
+        <div class="orbit-item" data-radius="160" data-speed="1" data-angle="120"><span class="num">3</span> <b>Prozessautomatisierung KI</b></div>
+        <div class="orbit-item" data-radius="160" data-speed="1" data-angle="180"><span class="num">4</span> <b>AI Automation Engineer</b></div>
+        <div class="orbit-item" data-radius="160" data-speed="1" data-angle="240"><span class="num">5</span> <b>KI Prozessmanager</b></div>
+        <div class="orbit-item" data-radius="160" data-speed="1" data-angle="300"><span class="num">6</span> <b>Automation Specialist KI</b></div>
+
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="0"><span class="num">7</span> <b>AI Business Automation</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="45"><span class="num">8</span> <b>AI Workflow Specialist</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="90"><span class="num">9</span> <b>Intelligent Automation</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="135"><span class="num">10</span> <b>Hyperautomation</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="180"><span class="num">11</span> <b>AI Agent Developer</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="225"><span class="num">12</span> <b>Low-Code Automation</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="270"><span class="num">13</span> <b>RPA KI</b></div>
+        <div class="orbit-item" data-radius="260" data-speed="-1" data-angle="315"><span class="num">14</span> <b>Business Process Automation KI</b></div>
+    </div>
+
+    <div class="quote anim-up delay-2" style="font-size: 13px; line-height: 1.3; margin-top: 0; padding: 10px 15px;">
+        <b><span lang-content="ru">Как появилась эта база:</span><span lang-content="ua">Як з'явилася ця база:</span><span lang-content="en">How this database came about:</span><span lang-content="de">Wie diese Datenbank entstanden ist:</span></b>
+        <ul style="margin-top: 5px; margin-bottom: 0; padding-left: 20px; font-size: 14px; line-height: 1.4;">
+            <li><b><span lang-content="ru">Анализ рынка:</span><span lang-content="ua">Аналіз ринку:</span><span lang-content="en">Market analysis:</span><span lang-content="de">Marktanalyse:</span></b> <span lang-content="ru">ручной просмотр топ-100 вакансий на LinkedIn и Indeed.</span><span lang-content="ua">ручний перегляд топ-100 вакансій на LinkedIn та Indeed.</span><span lang-content="en">manual review of the top 100 vacancies on LinkedIn and Indeed.</span><span lang-content="de">manuelle Überprüfung der Top-100-Stellenangebote auf LinkedIn und Indeed.</span></li>
+            <li><b><span lang-content="ru">Лингвистика:</span><span lang-content="ua">Лінгвістика:</span><span lang-content="en">Linguistics:</span><span lang-content="de">Linguistik:</span></b> <span lang-content="ru">выявление синонимов на английском (AI, Automation, Workflow) и немецком (KI, Automatisierung, Prozess) языках.</span><span lang-content="ua">виявлення синонімів англійською (AI, Automation, Workflow) та німецькою (KI, Automatisierung, Prozess) мовами.</span><span lang-content="en">identifying synonyms in English (AI, Automation, Workflow) and German (KI, Automatisierung, Prozess).</span><span lang-content="de">Identifizierung von Synonymen im Englischen (AI, Automation, Workflow) und Deutschen (KI, Automatisierung, Prozess).</span></li>
+            <li><b><span lang-content="ru">Группировка:</span><span lang-content="ua">Групування:</span><span lang-content="en">Grouping:</span><span lang-content="de">Gruppierung:</span></b> <span lang-content="ru">объединение в 14 уникальных запросов по уровню (Junior/Senior) и специфике (RPA, Low-Code, AI Agents).</span><span lang-content="ua">об'єднання в 14 унікальних запитів за рівнем (Junior/Senior) та специфікою (RPA, Low-Code, AI Agents).</span><span lang-content="en">combining into 14 unique queries by level (Junior/Senior) and specifics (RPA, Low-Code, AI Agents).</span><span lang-content="de">Zusammenfassung in 14 einzigartigen Abfragen nach Ebene (Junior/Senior) und Besonderheiten (RPA, Low-Code, AI Agents).</span></li>
+            <li><b><span lang-content="ru">Гибкость системы:</span><span lang-content="ua">Гнучкість системи:</span><span lang-content="en">System flexibility:</span><span lang-content="de">Systemflexibilität:</span></b> <span lang-content="ru">архитектура позволяет легко расширять базу запросов (от базовых Core Queries до продвинутых Extended Queries, включая конкретные инструменты вроде n8n).</span><span lang-content="ua">архітектура дозволяє легко розширювати базу запитів (від базових Core Queries до просунутих Extended Queries, включаючи конкретні інструменти на кшталт n8n).</span><span lang-content="en">the architecture allows you to easily expand the query base (from basic Core Queries to advanced Extended Queries, including specific tools like n8n).</span><span lang-content="de">Die Architektur ermöglicht es, die Abfragebasis einfach zu erweitern (von grundlegenden Core Queries bis zu erweiterten Extended Queries, einschließlich spezifischer Tools wie n8n).</span></li>
+        </ul>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 7 ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Обработка данных и фильтрация</span>
+        <span lang-content="ua">Обробка даних та фільтрація</span>
+        <span lang-content="en">Data processing and filtering</span>
+        <span lang-content="de">Datenverarbeitung und -filterung</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Программа собирает данные из нескольких источников, объединяет их и отсеивает нерелевантные вакансии.</span>
+        <span lang-content="ua">Програма збирає дані з кількох джерел, об'єднує їх та відсіює нерелевантні вакансії.</span>
+        <span lang-content="en">The program collects data from multiple sources, combines them, and filters out irrelevant vacancies.</span>
+        <span lang-content="de">Das Programm sammelt Daten aus mehreren Quellen, kombiniert sie und filtert irrelevante Stellenangebote heraus.</span>
+    </p>
+
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА screen6 -->
+    <div class="image-container anim-up delay-2" style="flex: 1; padding: 5px; background: #fff;">
+        <img src="screen6.png" alt="Скриншот загрузки и списка вакансий" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
+
+    <div class="quote anim-up delay-3" style="font-size: 16px;">
+        <b><span lang-content="ru">Почему в итоговом списке меньше вакансий?</span><span lang-content="ua">Чому в підсумковому списку менше вакансій?</span><span lang-content="en">Why are there fewer vacancies in the final list?</span><span lang-content="de">Warum gibt es in der endgültigen Liste weniger Stellenangebote?</span></b><br>
+        <span lang-content="ru">Программа собирает все вакансии по запросам (например, <b>87 вакансий</b>). Однако многие из них не относятся к AI. Алгоритм <b>отфильтровывает</b> нерелевантные вакансии.</span>
+        <span lang-content="ua">Програма збирає всі вакансії за запитами (наприклад, <b>87 вакансій</b>). Однак багато з них не належать до AI. Алгоритм <b>відфільтровує</b> нерелевантні вакансії.</span>
+        <span lang-content="en">The program collects all vacancies for queries (e.g., <b>87 vacancies</b>). However, many of them are not related to AI. The algorithm <b>filters out</b> irrelevant vacancies.</span>
+        <span lang-content="de">Das Programm sammelt alle Stellenangebote für Abfragen (z. B. <b>87 Stellenangebote</b>). Viele davon beziehen sich jedoch nicht auf KI. Der Algorithmus <b>filtert</b> irrelevante Stellenangebote <b>heraus</b>.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 8 ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Интерактивная карта вакансий (Германия)</span>
+        <span lang-content="ua">Інтерактивна карта вакансій (Німеччина)</span>
+        <span lang-content="en">Interactive job map (Germany)</span>
+        <span lang-content="de">Interaktive Stellenkarte (Deutschland)</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Программа наносит вакансии на спутниковую карту. Благодаря кластеризации маркеры не сливаются в одно пятно.</span>
+        <span lang-content="ua">Програма наносить вакансії на супутникову карту. Завдяки кластеризації маркери не зливаються в одну пляму.</span>
+        <span lang-content="en">The program plots vacancies on a satellite map. Thanks to clustering, markers do not merge into one spot.</span>
+        <span lang-content="de">Das Programm trägt Stellenangebote auf einer Satellitenkarte ein. Dank der Clusterbildung verschmelzen die Marker nicht zu einem Fleck.</span>
+    </p>
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА screen4 -->
+    <div class="image-container anim-up delay-2" style="flex: 1.5;">
+        <img src="screen4.png" alt="Скриншот карты Германии">
+    </div>
+    <div class="quote anim-up delay-3" style="font-size: 16px;">
+        <span lang-content="ru">При клике на маркер открывается окно с названием должности, компанией и городом.</span>
+        <span lang-content="ua">При кліку на маркер відкривається вікно з назвою посади, компанією та містом.</span>
+        <span lang-content="en">Clicking on a marker opens a window with the job title, company, and city.</span>
+        <span lang-content="de">Durch Klicken auf einen Marker öffnet sich ein Fenster mit Berufsbezeichnung, Unternehmen und Stadt.</span>
+    </div>
+</div>
+
+<!-- ================= НОВЫЙ СЛАЙД: ИНТЕРФЕЙС (КАРТА) ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Интерфейс: Карта и Мультиязычность</span>
+        <span lang-content="ua">Інтерфейс: Карта та Багатомовність</span>
+        <span lang-content="en">Interface: Map and Multilingualism</span>
+        <span lang-content="de">Schnittstelle: Karte und Mehrsprachigkeit</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Навигация по модулям программы (Market Analysis, Hamburg, Results, Job Map) и мгновенное переключение языка интерфейса (RU / UA / EN / DE).</span>
+        <span lang-content="ua">Навігація по модулях програми (Market Analysis, Hamburg, Results, Job Map) та миттєве перемикання мови інтерфейсу (RU / UA / EN / DE).</span>
+        <span lang-content="en">Navigation through the program modules (Market Analysis, Hamburg, Results, Job Map) and instant interface language switching (RU / UA / EN / DE).</span>
+        <span lang-content="de">Navigation durch die Programmmodule (Market Analysis, Hamburg, Results, Job Map) und sofortige Umschaltung der Oberflächensprache (RU / UA / EN / DE).</span>
+    </p>
+    
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА view-app-2 -->
+    <div class="image-container anim-up delay-2" style="flex: 1; padding: 10px; background: #fff;">
+        <img src="view-app-2.png" alt="Карта и меню выбора языка" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+    </div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px; margin-top: 10px;">
+        <b><span lang-content="ru">Детализация:</span><span lang-content="ua">Деталізація:</span><span lang-content="en">Details:</span><span lang-content="de">Details:</span></b>
+        <span lang-content="ru">В левом меню доступны все этапы: от сбора данных до подготовки к интервью. Карта Германии отображает кластеры вакансий, а выпадающее меню позволяет перевести весь интерфейс на один клик.</span>
+        <span lang-content="ua">У лівому меню доступні всі етапи: від збору даних до підготовки до інтерв'ю. Карта Німеччини відображає кластери вакансій, а випадаюче меню дозволяє перекласти весь інтерфейс на один клік.</span>
+        <span lang-content="en">The left menu provides access to all stages: from data collection to interview preparation. The map of Germany displays vacancy clusters, and the drop-down menu allows you to translate the entire interface in one click.</span>
+        <span lang-content="de">Das linke Menü bietet Zugriff auf alle Phasen: von der Datenerfassung bis zur Interviewvorbereitung. Die Deutschlandkarte zeigt Stellencluster an, und das Dropdown-Menü ermöglicht die Übersetzung der gesamten Oberfläche mit einem Klick.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 9: КАРТА ГАМБУРГА ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Специализированный поиск: Гамбург</span>
+        <span lang-content="ua">Спеціалізований пошук: Гамбург</span>
+        <span lang-content="en">Specialized search: Hamburg</span>
+        <span lang-content="de">Spezialisierte Suche: Hamburg</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Отдельный модуль для детального анализа рынка в Гамбурге с возможностью загрузки резюме.</span>
+        <span lang-content="ua">Окремий модуль для детального аналізу ринку в Гамбурзі з можливістю завантаження резюме.</span>
+        <span lang-content="en">A separate module for detailed market analysis in Hamburg with the ability to upload a resume.</span>
+        <span lang-content="de">Ein separates Modul für die detaillierte Marktanalyse in Hamburg mit der Möglichkeit, einen Lebenslauf hochzuladen.</span>
+    </p>
+    <!-- ИСПОЛЬЗУЕМ ВАШЕ ИМЯ ФАЙЛА screen7 -->
+    <div class="image-container anim-up delay-2" style="flex: 1.5;">
+        <img src="screen7.png" alt="Скриншот карты Гамбурга">
+    </div>
+    <div class="quote anim-up delay-3" style="font-size: 16px;">
+        <span lang-content="ru">На карте Гамбурга видна плотность вакансий в разных районах. Программа также позволяет сравнить навыки из резюме с требованиями рынка.</span>
+        <span lang-content="ua">На карті Гамбурга видно щільність вакансій у різних районах. Програма також дозволяє порівняти навички з резюме з вимогами ринку.</span>
+        <span lang-content="en">The Hamburg map shows the density of vacancies in different districts. The program also allows you to compare skills from your resume with market requirements.</span>
+        <span lang-content="de">Auf der Hamburg-Karte ist die Dichte der Stellenangebote in verschiedenen Bezirken zu sehen. Das Programm ermöglicht es Ihnen auch, Fähigkeiten aus Ihrem Lebenslauf mit den Marktanforderungen zu vergleichen.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 10: МАТРИЦА ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Уникальный интерфейс (Анимация)</span>
+        <span lang-content="ua">Унікальний інтерфейс (Анімація)</span>
+        <span lang-content="en">Unique interface (Animation)</span>
+        <span lang-content="de">Einzigartige Benutzeroberfläche (Animation)</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Разработана авторская анимация загрузки в стиле «Киберпанк» с падающими Hex-кодами.</span>
+        <span lang-content="ua">Розроблена авторська анімація завантаження в стилі «Кіберпанк» з падаючими Hex-кодами.</span>
+        <span lang-content="en">An original loading animation in the "Cyberpunk" style with falling Hex codes has been developed.</span>
+        <span lang-content="de">Es wurde eine originelle Ladeanimation im "Cyberpunk"-Stil mit fallenden Hex-Codes entwickelt.</span>
+    </p>
+
+    <div class="live-matrix-wrapper anim-up delay-2">
+        <div class="matrix-container">
+            <div class="matrix-bg" id="matrix-bg"></div>
+            <div class="scanner-line"></div>
+            <div class="scanner-text">
+                <div class="scanner-title">[ <span lang-content="ru">СКАНИРОВАНИЕ ДАННЫХ</span><span lang-content="ua">СКАНУВАННЯ ДАНИХ</span><span lang-content="en">DATA SCANNING</span><span lang-content="de">DATEN-SCANNING</span> ]</div>
+                LinkedIn (JobSpy): AI Automation Specialist
+                <span class="scanner-subtext">(3 <span lang-content="ru">из</span><span lang-content="ua">з</span><span lang-content="en">of</span><span lang-content="de">von</span> 3)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 11: СРАВНЕНИЕ ИНТЕРФЕЙСОВ ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Эволюция интерфейса: от концепта к удобству</span>
+        <span lang-content="ua">Еволюція інтерфейсу: від концепту до зручності</span>
+        <span lang-content="en">Interface evolution: from concept to convenience</span>
+        <span lang-content="de">Entwicklung der Benutzeroberfläche: vom Konzept zum Komfort</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">В презентации показан <b>голубой неоновый концепт</b> для контраста со слайдами. В самой программе используется <b>классическая зеленая матрица</b> — она комфортнее для глаз при длительной работе.</span>
+        <span lang-content="ua">У презентації показаний <b>блакитний неоновий концепт</b> для контрасту зі слайдами. У самій програмі використовується <b>класична зелена матриця</b> — вона комфортніша для очей при тривалій роботі.</span>
+        <span lang-content="en">The presentation shows a <b>blue neon concept</b> for contrast with the slides. The program itself uses a <b>classic green matrix</b> — it is more comfortable for the eyes during long work.</span>
+        <span lang-content="de">Die Präsentation zeigt ein <b>blaues Neonkonzept</b> für den Kontrast zu den Folien. Das Programm selbst verwendet eine <b>klassische grüne Matrix</b> – sie ist bei längerer Arbeit angenehmer für die Augen.</span>
+    </p>
+
+    <div class="anim-up delay-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; margin-top: 10px;">
+        
+        <div style="display: flex; flex-direction: column;">
+            <div style="background: #e0f2fe; color: #0369a1; padding: 8px; text-align: center; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px; border: 1px solid #bae6fd; border-bottom: none;">
+                <span lang-content="ru">Презентация (Голубой неон)</span><span lang-content="ua">Презентація (Блакитний неон)</span><span lang-content="en">Presentation (Blue Neon)</span><span lang-content="de">Präsentation (Blaues Neon)</span>
+            </div>
+            <div class="matrix-container" style="flex: 1; border-radius: 0 0 8px 8px; border-color: rgba(0, 255, 255, 0.4);">
+                <div class="matrix-bg" id="matrix-bg-blue"></div>
+                <div class="scanner-text" style="transform: scale(0.8);">
+                    <div class="scanner-title">[ <span lang-content="ru">СКАНИРОВАНИЕ ДАННЫХ</span><span lang-content="ua">СКАНУВАННЯ ДАНИХ</span><span lang-content="en">DATA SCANNING</span><span lang-content="de">DATEN-SCANNING</span> ]</div>
+                    LinkedIn (JobSpy): AI Automation
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+            <div style="background: #dcfce7; color: #166534; padding: 8px; text-align: center; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px; border: 1px solid #bbf7d0; border-bottom: none;">
+                <span lang-content="ru">Программа (Зеленая матрица)</span><span lang-content="ua">Програма (Зелена матриця)</span><span lang-content="en">Program (Green Matrix)</span><span lang-content="de">Programm (Grüne Matrix)</span>
+            </div>
+            <div class="matrix-container matrix-real" style="flex: 1; border-radius: 0 0 8px 8px; border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);">
+                <div class="matrix-bg" id="matrix-bg-green"></div>
+                <div class="scanner-line" style="background: linear-gradient(90deg, transparent, #10b981, #10b981, transparent); box-shadow: 0 0 25px #10b981;"></div>
+                <div class="scanner-text" style="transform: scale(0.8); border-color: rgba(16, 185, 129, 0.5); text-shadow: 0 0 10px #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.3) inset;">
+                    <div class="scanner-title" style="color: #10b981;">[ <span lang-content="ru">СКАНИРОВАНИЕ ДАННЫХ</span><span lang-content="ua">СКАНУВАННЯ ДАНИХ</span><span lang-content="en">DATA SCANNING</span><span lang-content="de">DATEN-SCANNING</span> ]</div>
+                    Arbeitsagentur: Power BI KI
+                    <span class="scanner-subtext">(5 <span lang-content="ru">из</span><span lang-content="ua">з</span><span lang-content="en">of</span><span lang-content="de">von</span> 8)</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 12: КАРТОЧКИ ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Что программа умеет сейчас</span>
+        <span lang-content="ua">Що програма вміє зараз</span>
+        <span lang-content="en">What the program can do now</span>
+        <span lang-content="de">Was das Programm jetzt kann</span>
+    </h2>
+    <p class="anim-up delay-1" style="margin-bottom: 5px;">
+        <span lang-content="ru">На данный момент <b>AILMR</b> — это полноценный аналитический веб-инструмент, который:</span>
+        <span lang-content="ua">На даний момент <b>AILMR</b> — це повноцінний аналітичний веб-інструмент, який:</span>
+        <span lang-content="en">Currently, <b>AILMR</b> is a full-fledged analytical web tool that:</span>
+        <span lang-content="de">Derzeit ist <b>AILMR</b> ein vollwertiges analytisches Web-Tool, das:</span>
+    </p>
+
+    <div class="features-grid">
+        <div class="feature-card anim-up delay-1">
+            <div class="feature-icon">📥</div>
+            <div class="feature-title"><span lang-content="ru">Сбор данных</span><span lang-content="ua">Збір даних</span><span lang-content="en">Data collection</span><span lang-content="de">Datenerfassung</span></div>
+            <div class="feature-text"><span lang-content="ru">Собирает данные с 3 источников (Arbeitsagentur, Indeed, LinkedIn), используя 14 запросов.</span><span lang-content="ua">Збирає дані з 3 джерел (Arbeitsagentur, Indeed, LinkedIn), використовуючи 14 запитів.</span><span lang-content="en">Collects data from 3 sources (Arbeitsagentur, Indeed, LinkedIn) using 14 queries.</span><span lang-content="de">Sammelt Daten aus 3 Quellen (Arbeitsagentur, Indeed, LinkedIn) mit 14 Abfragen.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-1">
+            <div class="feature-icon">🧹</div>
+            <div class="feature-title"><span lang-content="ru">Очистка</span><span lang-content="ua">Очищення</span><span lang-content="en">Cleaning</span><span lang-content="de">Bereinigung</span></div>
+            <div class="feature-text"><span lang-content="ru">Объединяет данные из разных источников в один список и автоматически удаляет дубликаты.</span><span lang-content="ua">Об'єднує дані з різних джерел в один список і автоматично видаляє дублікати.</span><span lang-content="en">Combines data from different sources into one list and automatically removes duplicates.</span><span lang-content="de">Kombiniert Daten aus verschiedenen Quellen in einer Liste und entfernt automatisch Duplikate.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-2">
+            <div class="feature-icon">🏢</div>
+            <div class="feature-title"><span lang-content="ru">Извлечение данных</span><span lang-content="ua">Витяг даних</span><span lang-content="en">Data extraction</span><span lang-content="de">Datenextraktion</span></div>
+            <div class="feature-text"><span lang-content="ru">Автоматически извлекает названия компаний, города и зарплаты из текстов вакансий.</span><span lang-content="ua">Автоматично витягує назви компаній, міста та зарплати з текстів вакансій.</span><span lang-content="en">Automatically extracts company names, cities, and salaries from job texts.</span><span lang-content="de">Extrahiert automatisch Firmennamen, Städte und Gehälter aus den Stellentexten.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-2">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title"><span lang-content="ru">Анализ</span><span lang-content="ua">Аналіз</span><span lang-content="en">Analysis</span><span lang-content="de">Analyse</span></div>
+            <div class="feature-text"><span lang-content="ru">Анализирует топ навыков (Python, RPA, n8n) и выявляет альтернативные названия должностей.</span><span lang-content="ua">Аналізує топ навичок (Python, RPA, n8n) та виявляє альтернативні назви посад.</span><span lang-content="en">Analyzes top skills (Python, RPA, n8n) and identifies alternative job titles.</span><span lang-content="de">Analysiert Top-Skills (Python, RPA, n8n) und identifiziert alternative Berufsbezeichnungen.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-2">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title"><span lang-content="ru">Статистика</span><span lang-content="ua">Статистика</span><span lang-content="en">Statistics</span><span lang-content="de">Statistik</span></div>
+            <div class="feature-text"><span lang-content="ru">Показывает наглядную статистику в виде удобных таблиц и графиков.</span><span lang-content="ua">Показує наочну статистику у вигляді зручних таблиць і графіків.</span><span lang-content="en">Shows clear statistics in the form of convenient tables and charts.</span><span lang-content="de">Zeigt übersichtliche Statistiken in Form von praktischen Tabellen und Diagrammen.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-3">
+            <div class="feature-icon">🗺️</div>
+            <div class="feature-title"><span lang-content="ru">Геоаналитика</span><span lang-content="ua">Геоаналітика</span><span lang-content="en">Geospatial analysis</span><span lang-content="de">Geoanalyse</span></div>
+            <div class="feature-text"><span lang-content="ru">Визуализирует географию вакансий на карте (включая специализированный модуль Гамбурга).</span><span lang-content="ua">Візуалізує географію вакансій на карті (включаючи спеціалізований модуль Гамбурга).</span><span lang-content="en">Visualizes the geography of vacancies on a map (including the specialized Hamburg module).</span><span lang-content="de">Visualisiert die Geografie der Stellenangebote auf einer Karte (einschließlich des spezialisierten Hamburg-Moduls).</span></div>
+        </div>
+        <div class="feature-card anim-up delay-3">
+            <div class="feature-icon">📄</div>
+            <div class="feature-title"><span lang-content="ru">Экспорт</span><span lang-content="ua">Експорт</span><span lang-content="en">Export</span><span lang-content="de">Export</span></div>
+            <div class="feature-text"><span lang-content="ru">Позволяет выгрузить все данные в CSV (для Excel) или сгенерировать готовый PDF-отчёт.</span><span lang-content="ua">Дозволяє вивантажити всі дані в CSV (для Excel) або згенерувати готовий PDF-звіт.</span><span lang-content="en">Allows you to export all data to CSV (for Excel) or generate a ready-made PDF report.</span><span lang-content="de">Ermöglicht den Export aller Daten in CSV (für Excel) oder die Erstellung eines fertigen PDF-Berichts.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-3">
+            <div class="feature-icon">🌍</div>
+            <div class="feature-title"><span lang-content="ru">Мультиязычность</span><span lang-content="ua">Багатомовність</span><span lang-content="en">Multilingual</span><span lang-content="de">Mehrsprachig</span></div>
+            <div class="feature-text"><span lang-content="ru">Поддерживает три языка интерфейса (RU / DE / EN) с мгновенным переключением.</span><span lang-content="ua">Підтримує три мови інтерфейсу (RU / DE / EN) з миттєвим перемиканням.</span><span lang-content="en">Supports three interface languages (RU / DE / EN) with instant switching.</span><span lang-content="de">Unterstützt drei Oberflächensprachen (RU / DE / EN) mit sofortiger Umschaltung.</span></div>
+        </div>
+        <div class="feature-card anim-up delay-3">
+            <div class="feature-icon">🎨</div>
+            <div class="feature-title"><span lang-content="ru">Интерфейс</span><span lang-content="ua">Інтерфейс</span><span lang-content="en">Interface</span><span lang-content="de">Schnittstelle</span></div>
+            <div class="feature-text"><span lang-content="ru">Обладает уникальным темным интерфейсом с кастомной анимацией в стиле «киберпанк».</span><span lang-content="ua">Володіє унікальним темним інтерфейсом з кастомною анімацією в стилі «кіберпанк».</span><span lang-content="en">Features a unique dark interface with custom "cyberpunk" style animation.</span><span lang-content="de">Verfügt über eine einzigartige dunkle Oberfläche mit einer benutzerdefinierten Animation im "Cyberpunk"-Stil.</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 13: ДОП. ЗАДАНИЕ ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Дополнительное задание: Скиллы × Названия</span>
+        <span lang-content="ua">Додаткове завдання: Скіли × Назви</span>
+        <span lang-content="en">Additional task: Skills × Titles</span>
+        <span lang-content="de">Zusatzaufgabe: Skills × Titel</span>
+    </h2>
+    <div class="anim-up delay-1" style="font-size: 19px; line-height: 1.5; color: #333; margin-bottom: 10px;">
+        <span lang-content="ru">Требовалось определить, <b>под какими названиями вакансий встречаются конкретные скиллы</b>, и проранжировать их.</span>
+        <span lang-content="ua">Потрібно було визначити, <b>під якими назвами вакансій зустрічаються конкретні скіли</b>, і проранжувати їх.</span>
+        <span lang-content="en">It was required to determine <b>under which job titles specific skills are found</b> and rank them.</span>
+        <span lang-content="de">Es war erforderlich, festzustellen, <b>unter welchen Berufsbezeichnungen bestimmte Fähigkeiten zu finden sind</b>, und sie zu ordnen.</span>
+    </div>
+
+    <p class="anim-up delay-2" style="font-size: 16px; font-weight: 600; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+        <span lang-content="ru">Список анализируемых скиллов (19 инструментов):</span>
+        <span lang-content="ua">Список аналізованих скілів (19 інструментів):</span>
+        <span lang-content="en">List of analyzed skills (19 tools):</span>
+        <span lang-content="de">Liste der analysierten Fähigkeiten (19 Tools):</span>
+    </p>
+
+    <div class="skills-grouped-container anim-up delay-2">
+
+        <div class="skill-group">
+            <div class="skill-group-title" style="color: #1f77b4;">⚙️ Automation</div>
+            <div class="skill-tags">
+                <span class="skill-tag" data-tooltip="Платформа для визуальной автоматизации (No-code)" style="background: #dbeafe; color: #1e40af; border-color: #bfdbfe;">n8n</span>
+                <span class="skill-tag" data-tooltip="Механизм отправки сообщений между приложениями при событии" style="background: #dbeafe; color: #1e40af; border-color: #bfdbfe;">Webhooks</span>
+                <span class="skill-tag" data-tooltip="Единый API для доступа к сотням нейросетей" style="background: #dbeafe; color: #1e40af; border-color: #bfdbfe;">OpenRouter</span>
+                <span class="skill-tag" data-tooltip="Текстовый формат обмена данными" style="background: #dbeafe; color: #1e40af; border-color: #bfdbfe;">JSON</span>
+            </div>
+        </div>
+
+        <div class="skill-group">
+            <div class="skill-group-title" style="color: #8b5cf6;">🧠 LLM & AI</div>
+            <div class="skill-tags">
+                <span class="skill-tag" data-tooltip="Языковая модель от OpenAI" style="background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff;">ChatGPT (GPT)</span>
+                <span class="skill-tag" data-tooltip="Языковая модель от Anthropic (сильна в коде)" style="background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff;">Claude</span>
+                <span class="skill-tag" data-tooltip="Мультимодальная модель от Google" style="background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff;">Gemini</span>
+                <span class="skill-tag" data-tooltip="Платформа для хостинга ML-моделей" style="background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff;">Hugging Face</span>
+                <span class="skill-tag" data-tooltip="AI-инструмент Google для работы с документами" style="background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff;">NotebookLM</span>
+            </div>
+        </div>
+
+        <div class="skill-group">
+            <div class="skill-group-title" style="color: #3b82f6;">🔌 API & Data</div>
+            <div class="skill-tags">
+                <span class="skill-tag" data-tooltip="Архитектурный стиль взаимодействия приложений" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">REST API</span>
+                <span class="skill-tag" data-tooltip="Протокол подключения нейросетей к локальным данным" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">MCP (Model Context Protocol)</span>
+                <span class="skill-tag" data-tooltip="Интерфейс для управления почтой Gmail" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Gmail API</span>
+                <span class="skill-tag" data-tooltip="Интерфейс для работы с Google Календарем" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Google Calendar API</span>
+                <span class="skill-tag" data-tooltip="Облачные таблицы от Google" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Google Sheets</span>
+                <span class="skill-tag" data-tooltip="Протокол безопасной авторизации" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">OAuth</span>
+            </div>
+        </div>
+
+        <div class="skill-group">
+            <div class="skill-group-title" style="color: #10b981;">🎨 Media & Other</div>
+            <div class="skill-tags">
+                <span class="skill-tag" data-tooltip="Нейросеть для генерации и клонирования голоса" style="background: #dcfce7; color: #166534; border-color: #bbf7d0;">ElevenLabs</span>
+                <span class="skill-tag" data-tooltip="Распознавание текста с картинок и сканов" style="background: #dcfce7; color: #166534; border-color: #bbf7d0;">OCR</span>
+                <span class="skill-tag" data-tooltip="Мессенджер с API для создания ботов" style="background: #dcfce7; color: #166534; border-color: #bbf7d0;">Telegram</span>
+                <span class="skill-tag" data-tooltip="Инструмент для создания диаграмм (от Figma)" style="background: #dcfce7; color: #166534; border-color: #bbf7d0;">FigJam</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="quote anim-up delay-3" style="margin-top: 15px; font-size: 15px; border-left-color: #8b5cf6; background: #f8fafc;">
+        <b><span lang-content="ru">Решение:</span><span lang-content="ua">Рішення:</span><span lang-content="en">Solution:</span><span lang-content="de">Lösung:</span></b> 
+        <span lang-content="ru">В программу внедрен модуль <code>SkillTitleRanker</code>, который использует регулярные выражения (Regex) для поиска этих 19 скиллов в текстах вакансий (DE + EN) и вычисляет их корреляцию с названиями должностей.</span>
+        <span lang-content="ua">У програму впроваджено модуль <code>SkillTitleRanker</code>, який використовує регулярні вирази (Regex) для пошуку цих 19 скілів у текстах вакансій (DE + EN) та обчислює їх кореляцію з назвами посад.</span>
+        <span lang-content="en">The program includes the <code>SkillTitleRanker</code> module, which uses regular expressions (Regex) to find these 19 skills in job texts (DE + EN) and calculates their correlation with job titles.</span>
+        <span lang-content="de">Das Programm enthält das Modul <code>SkillTitleRanker</code>, das reguläre Ausdrücke (Regex) verwendet, um diese 19 Fähigkeiten in Stellentexten (DE + EN) zu finden und ihre Korrelation mit Berufsbezeichnungen zu berechnen.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 14: ТОП СКИЛЛОВ ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Анализ частоты: Топ скиллов</span>
+        <span lang-content="ua">Аналіз частоти: Топ скілів</span>
+        <span lang-content="en">Frequency Analysis: Top Skills</span>
+        <span lang-content="de">Häufigkeitsanalyse: Top-Skills</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Программа просканировала собранные вакансии и выявила наиболее востребованные инструменты. <br>Ниже приведены реальные данные из сгенерированного PDF-отчета:</span>
+        <span lang-content="ua">Програма просканувала зібрані вакансії та виявила найбільш затребувані інструменти. <br>Нижче наведено реальні дані зі згенерованого PDF-звіту:</span>
+        <span lang-content="en">The program scanned the collected vacancies and identified the most in-demand tools. <br>Below are real data from the generated PDF report:</span>
+        <span lang-content="de">Das Programm hat die gesammelten Stellenangebote gescannt und die gefragtesten Tools identifiziert. <br>Nachfolgend finden Sie echte Daten aus dem generierten PDF-Bericht:</span>
+    </p>
+
+    <div class="bar-chart anim-up delay-2">
+        <div class="bar-row">
+            <div class="bar-label">n8n</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 100%;">7 <span lang-content="ru">вакансий / 11 упоминаний</span><span lang-content="ua">вакансій / 11 згадок</span><span lang-content="en">vacancies / 11 mentions</span><span lang-content="de">Stellen / 11 Erwähnungen</span></div></div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Claude</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 100%;">7 <span lang-content="ru">вакансий / 10 упоминаний</span><span lang-content="ua">вакансій / 10 згадок</span><span lang-content="en">vacancies / 10 mentions</span><span lang-content="de">Stellen / 10 Erwähnungen</span></div></div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">REST API</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 85%;">7 <span lang-content="ru">вакансий / 8 упоминаний</span><span lang-content="ua">вакансій / 8 згадок</span><span lang-content="en">vacancies / 8 mentions</span><span lang-content="de">Stellen / 8 Erwähnungen</span></div></div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">MCP (Model Context)</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 35%;">2 <span lang-content="ru">вакансии / 4 упоминания</span><span lang-content="ua">вакансії / 4 згадки</span><span lang-content="en">vacancies / 4 mentions</span><span lang-content="de">Stellen / 4 Erwähnungen</span></div></div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Webhooks</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 30%;">2 <span lang-content="ru">вакансии / 2 упоминания</span><span lang-content="ua">вакансії / 2 згадки</span><span lang-content="en">vacancies / 2 mentions</span><span lang-content="de">Stellen / 2 Erwähnungen</span></div></div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">ChatGPT (GPT)</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 20%;">1 <span lang-content="ru">вакансия / 2 упоминания</span><span lang-content="ua">вакансія / 2 згадки</span><span lang-content="en">vacancy / 2 mentions</span><span lang-content="de">Stelle / 2 Erwähnungen</span></div></div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">ElevenLabs</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 19%;">1 <span lang-content="ru">вакансия / 1 упоминание</span><span lang-content="ua">вакансія / 1 згадка</span><span lang-content="en">vacancy / 1 mention</span><span lang-content="de">Stelle / 1 Erwähnung</span></div></div>
+        </div>
+    </div>
+
+    <div class="quote anim-up delay-3" style="margin-top: auto; font-size: 15px;">
+        <b><span lang-content="ru">Инсайт:</span><span lang-content="ua">Інсайт:</span><span lang-content="en">Insight:</span><span lang-content="de">Einblick:</span></b> 
+        <span lang-content="ru">Большинство современных AI-вакансий требуют знания <b>n8n</b> для создания автоматизаций и <b>Claude</b> в качестве основной языковой модели. Инструменты вроде <i>Hugging Face</i> или <i>Gemini</i> в данной выборке не встречались.</span>
+        <span lang-content="ua">Більшість сучасних AI-вакансій вимагають знання <b>n8n</b> для створення автоматизацій та <b>Claude</b> як основної мовної моделі. Інструменти на кшталт <i>Hugging Face</i> або <i>Gemini</i> в цій вибірці не зустрічалися.</span>
+        <span lang-content="en">Most modern AI vacancies require knowledge of <b>n8n</b> for creating automations and <b>Claude</b> as the main language model. Tools like <i>Hugging Face</i> or <i>Gemini</i> did not appear in this sample.</span>
+        <span lang-content="de">Die meisten modernen KI-Stellenangebote erfordern Kenntnisse in <b>n8n</b> zur Erstellung von Automatisierungen und <b>Claude</b> als Hauptsprachmodell. Tools wie <i>Hugging Face</i> oder <i>Gemini</i> kamen in dieser Stichprobe nicht vor.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 15: PLOTLY BAR ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Интерактивный график: частота скиллов</span>
+        <span lang-content="ua">Інтерактивний графік: частота скілів</span>
+        <span lang-content="en">Interactive chart: skill frequency</span>
+        <span lang-content="de">Interaktives Diagramm: Skill-Häufigkeit</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Наведите курсор на столбец, чтобы увидеть точное количество вакансий и упоминаний. Данные 1:1 из PDF-отчёта.</span>
+        <span lang-content="ua">Наведіть курсор на стовпець, щоб побачити точну кількість вакансій і згадок. Дані 1:1 з PDF-звіту.</span>
+        <span lang-content="en">Hover over a bar to see the exact number of vacancies and mentions. Data 1:1 from the PDF report.</span>
+        <span lang-content="de">Bewegen Sie den Mauszeiger über einen Balken, um die genaue Anzahl der Stellen und Erwähnungen zu sehen. Daten 1:1 aus dem PDF-Bericht.</span>
+    </p>
+
+    <div class="anim-up delay-2" id="plotly-bar" style="width: 100%; height: 380px; margin-top: 10px; background: #fafafa; border-radius: 10px; border: 1px solid #e2e8f0;"></div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px;">
+        <b><span lang-content="ru">Данные:</span><span lang-content="ua">Дані:</span><span lang-content="en">Data:</span><span lang-content="de">Daten:</span></b> 
+        <span lang-content="ru">n8n — 7 вакансий / 11 упоминаний; Claude — 7/10; REST API — 7/8; MCP — 2/4; Webhooks — 2/2; ChatGPT — 1/2; ElevenLabs — 1/1. Остальные 12 скиллов — 0 упоминаний.</span>
+        <span lang-content="ua">n8n — 7 вакансій / 11 згадок; Claude — 7/10; REST API — 7/8; MCP — 2/4; Webhooks — 2/2; ChatGPT — 1/2; ElevenLabs — 1/1. Решта 12 скілів — 0 згадок.</span>
+        <span lang-content="en">n8n — 7 vacancies / 11 mentions; Claude — 7/10; REST API — 7/8; MCP — 2/4; Webhooks — 2/2; ChatGPT — 1/2; ElevenLabs — 1/1. The remaining 12 skills — 0 mentions.</span>
+        <span lang-content="de">n8n — 7 Stellen / 11 Erwähnungen; Claude — 7/10; REST API — 7/8; MCP — 2/4; Webhooks — 2/2; ChatGPT — 1/2; ElevenLabs — 1/1. Die restlichen 12 Fähigkeiten — 0 Erwähnungen.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 16: PLOTLY SUNBURST ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Иерархия: скиллы по категориям</span>
+        <span lang-content="ua">Ієрархія: скіли за категоріями</span>
+        <span lang-content="en">Hierarchy: skills by category</span>
+        <span lang-content="de">Hierarchie: Fähigkeiten nach Kategorie</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Sunburst-диаграмма показывает вложенность: категория → скилл → количество упоминаний. Кликните на сектор, чтобы приблизить.</span>
+        <span lang-content="ua">Sunburst-діаграма показує вкладеність: категорія → скіл → кількість згадок. Клікніть на сектор, щоб наблизити.</span>
+        <span lang-content="en">The sunburst chart shows the nesting: category → skill → number of mentions. Click on a sector to zoom in.</span>
+        <span lang-content="de">Das Sunburst-Diagramm zeigt die Verschachtelung: Kategorie → Fähigkeit → Anzahl der Erwähnungen. Klicken Sie auf einen Sektor, um zu zoomen.</span>
+    </p>
+
+    <div class="anim-up delay-2" id="plotly-sunburst" style="width: 100%; height: 380px; margin-top: 10px; background: #fafafa; border-radius: 10px; border: 1px solid #e2e8f0;"></div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px;">
+        <b><span lang-content="ru">Категории:</span><span lang-content="ua">Категорії:</span><span lang-content="en">Categories:</span><span lang-content="de">Kategorien:</span></b> 
+        <span lang-content="ru">Automation (n8n, Webhooks), LLM (Claude, ChatGPT), API (REST API, MCP), Voice (ElevenLabs).</span>
+        <span lang-content="ua">Automation (n8n, Webhooks), LLM (Claude, ChatGPT), API (REST API, MCP), Voice (ElevenLabs).</span>
+        <span lang-content="en">Automation (n8n, Webhooks), LLM (Claude, ChatGPT), API (REST API, MCP), Voice (ElevenLabs).</span>
+        <span lang-content="de">Automation (n8n, Webhooks), LLM (Claude, ChatGPT), API (REST API, MCP), Voice (ElevenLabs).</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 17: РАНЖИРОВАНИЕ ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Ранжирование альтернативных названий</span>
+        <span lang-content="ua">Ранжування альтернативних назв</span>
+        <span lang-content="en">Ranking of alternative titles</span>
+        <span lang-content="de">Ranking alternativer Titel</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Названия вакансий были проранжированы на основе <span class="tooltip-text" data-tooltip="Inverse Document Frequency — мера важности слова в контексте. Редкие скиллы получают больший вес, а частые (как JSON) — меньший.">IDF-скора</span> (редкие скиллы весят больше) и количества уникальных скиллов.</span>
+        <span lang-content="ua">Назви вакансій були проранжовані на основі <span class="tooltip-text" data-tooltip="Inverse Document Frequency — міра важливості слова в контексті. Рідкісні скіли отримують більшу вагу, а часті (як JSON) — меншу.">IDF-скору</span> (рідкісні скіли важать більше) та кількості унікальних скілів.</span>
+        <span lang-content="en">Job titles were ranked based on the <span class="tooltip-text" data-tooltip="Inverse Document Frequency — a measure of word importance in context. Rare skills get more weight, frequent ones (like JSON) less.">IDF score</span> (rare skills weigh more) and the number of unique skills.</span>
+        <span lang-content="de">Berufsbezeichnungen wurden basierend auf dem <span class="tooltip-text" data-tooltip="Inverse Document Frequency — ein Maß für die Wortbedeutung im Kontext. Seltene Fähigkeiten erhalten mehr Gewicht, häufige (wie JSON) weniger.">IDF-Score</span> (seltene Fähigkeiten wiegen mehr) und der Anzahl einzigartiger Fähigkeiten eingestuft.</span>
+    </p>
+
+    <table class="table-simple anim-up delay-2">
+        <thead>
+            <tr>
+                <th><span lang-content="ru">Ранг</span><span lang-content="ua">Ранг</span><span lang-content="en">Rank</span><span lang-content="de">Rang</span></th>
+                <th><span lang-content="ru">Название (Пример)</span><span lang-content="ua">Назва (Приклад)</span><span lang-content="en">Title (Example)</span><span lang-content="de">Titel (Beispiel)</span></th>
+                <th><span lang-content="ru">Вакансий</span><span lang-content="ua">Вакансій</span><span lang-content="en">Vacancies</span><span lang-content="de">Stellen</span></th>
+                <th><span lang-content="ru">Уник. скиллов</span><span lang-content="ua">Унік. скілів</span><span lang-content="en">Uniq. skills</span><span lang-content="de">Einzig. Skills</span></th>
+                <th><span lang-content="ru">Покрытие</span><span lang-content="ua">Покриття</span><span lang-content="en">Coverage</span><span lang-content="de">Abdeckung</span></th>
+                <th>IDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>AI Automation Specialist - Marketing &amp; Web</td>
+                <td>1</td>
+                <td>5</td>
+                <td><span class="badge">26.3%</span></td>
+                <td>20.63</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>AI Engineering &amp; Automation Specialist</td>
+                <td>1</td>
+                <td>4</td>
+                <td><span class="badge">21.1%</span></td>
+                <td>16.89</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Junior AI-Automation Specialist</td>
+                <td>2</td>
+                <td>3</td>
+                <td><span class="badge">15.8%</span></td>
+                <td>12.58</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>AI Video Creator &amp; Automation Specialist</td>
+                <td>1</td>
+                <td>3</td>
+                <td><span class="badge">15.8%</span></td>
+                <td>12.58</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>AI Builder &amp; Automation Specialist</td>
+                <td>2</td>
+                <td>2</td>
+                <td><span class="badge">10.5%</span></td>
+                <td>7.47</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="quote anim-up delay-3" style="margin-top: auto;">
+        <b><span lang-content="ru">Вывод:</span><span lang-content="ua">Висновок:</span><span lang-content="en">Conclusion:</span><span lang-content="de">Fazit:</span></b> 
+        <span lang-content="ru">Наиболее специфичные (редкие) скиллы сконцентрированы в названиях, содержащих маркетинг, веб-разработку или инженерию. Это позволяет работодателям точнее находить нужных специалистов узкого профиля.</span>
+        <span lang-content="ua">Найбільш специфічні (рідкісні) скіли сконцентровані в назвах, що містять маркетинг, веб-розробку або інженерію. Це дозволяє роботодавцям точніше знаходити потрібних фахівців вузького профілю.</span>
+        <span lang-content="en">The most specific (rare) skills are concentrated in titles containing marketing, web development, or engineering. This allows employers to more accurately find the right narrow-profile specialists.</span>
+        <span lang-content="de">Die spezifischsten (seltensten) Fähigkeiten konzentrieren sich auf Titel, die Marketing, Webentwicklung oder Engineering enthalten. Dadurch können Arbeitgeber die richtigen Spezialisten für Nischenprofile genauer finden.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 18: АРХИТЕКТУРА ================= -->
+<div class="slide">
+    <h2>
+        <span lang-content="ru">Архитектура алгоритма анализа скиллов</span>
+        <span lang-content="ua">Архітектура алгоритму аналізу скілів</span>
+        <span lang-content="en">Skill analysis algorithm architecture</span>
+        <span lang-content="de">Architektur des Skill-Analyse-Algorithmus</span>
+    </h2>
+    <div class="features-grid anim-up delay-1" style="grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+        <div class="feature-card" style="align-items: flex-start; text-align: left; padding: 20px;">
+            <div class="feature-title" style="font-size: 20px; margin-bottom: 15px;"><span lang-content="ru">1. Нормализация</span><span lang-content="ua">1. Нормалізація</span><span lang-content="en">1. Normalization</span><span lang-content="de">1. Normalisierung</span></div>
+            <div class="feature-text" style="font-size: 16px;"><span lang-content="ru">Очистка названий от немецких пометок (m/w/d) и лишних символов. <i>Пример: "1:AI Specialist (m/w/d)" -&gt; "ai specialist"</i></span><span lang-content="ua">Очищення назв від німецьких позначок (m/w/d) та зайвих символів. <i>Приклад: "1:AI Specialist (m/w/d)" -&gt; "ai specialist"</i></span><span lang-content="en">Cleaning titles from German notes (m/w/d) and extra characters. <i>Example: "1:AI Specialist (m/w/d)" -&gt; "ai specialist"</i></span><span lang-content="de">Bereinigung von Titeln von deutschen Hinweisen (m/w/d) und zusätzlichen Zeichen. <i>Beispiel: "1:AI Specialist (m/w/d)" -&gt; "ai specialist"</i></span></div>
+        </div>
+        <div class="feature-card" style="align-items: flex-start; text-align: left; padding: 20px;">
+            <div class="feature-title" style="font-size: 20px; margin-bottom: 15px;"><span lang-content="ru">2. Поиск скиллов</span><span lang-content="ua">2. Пошук скілів</span><span lang-content="en">2. Skill search</span><span lang-content="de">2. Skill-Suche</span></div>
+            <div class="feature-text" style="font-size: 16px;"><span lang-content="ru">Проход по тексту вакансии с помощью Regex. Поддерживаются английские и немецкие варианты написания (DE + EN).</span><span lang-content="ua">Прохід по тексту вакансії за допомогою Regex. Підтримуються англійський та німецький варіанти написання (DE + EN).</span><span lang-content="en">Passing through the job text using Regex. English and German spellings are supported (DE + EN).</span><span lang-content="de">Durchlaufen des Stellentextes mit Regex. Englische und deutsche Schreibweisen werden unterstützt (DE + EN).</span></div>
+        </div>
+        <div class="feature-card" style="align-items: flex-start; text-align: left; padding: 20px;">
+            <div class="feature-title" style="font-size: 20px; margin-bottom: 15px;"><span lang-content="ru">3. IDF-взвешивание</span><span lang-content="ua">3. IDF-зважування</span><span lang-content="en">3. IDF weighting</span><span lang-content="de">3. IDF-Gewichtung</span></div>
+            <div class="feature-text" style="font-size: 16px;"><span lang-content="ru">Редкие скиллы (например, <i>ElevenLabs</i>) получают больший вес, чем массовые (например, <i>JSON</i>). Это делает рейтинг точнее.</span><span lang-content="ua">Рідкісні скіли (наприклад, <i>ElevenLabs</i>) отримують більшу вагу, ніж масові (наприклад, <i>JSON</i>). Це робить рейтинг точнішим.</span><span lang-content="en">Rare skills (e.g., <i>ElevenLabs</i>) get more weight than mass ones (e.g., <i>JSON</i>). This makes the ranking more accurate.</span><span lang-content="de">Seltene Fähigkeiten (z. B. <i>ElevenLabs</i>) erhalten mehr Gewicht als Massenware (z. B. <i>JSON</i>). Dies macht das Ranking genauer.</span></div>
+        </div>
+        <div class="feature-card" style="align-items: flex-start; text-align: left; padding: 20px;">
+            <div class="feature-title" style="font-size: 20px; margin-bottom: 15px;"><span lang-content="ru">4. Ранжирование</span><span lang-content="ua">4. Ранжування</span><span lang-content="en">4. Ranking</span><span lang-content="de">4. Ranking</span></div>
+            <div class="feature-text" style="font-size: 16px;"><span lang-content="ru">Сортировка названий по сумме IDF-скоров и выгрузка результатов в удобные таблицы и PDF-отчеты.</span><span lang-content="ua">Сортування назв за сумою IDF-скорів і вивантаження результатів у зручні таблиці та PDF-звіти.</span><span lang-content="en">Sorting titles by the sum of IDF scores and exporting the results to convenient tables and PDF reports.</span><span lang-content="de">Sortieren von Titeln nach der Summe der IDF-Scores und Exportieren der Ergebnisse in praktische Tabellen und PDF-Berichte.</span></div>
+        </div>
+    </div>
+    <div class="quote anim-up delay-2" style="margin-top: 20px;">
+        <span lang-content="ru">«Мы не просто ищем слова, мы оцениваем смысловую нагрузку каждого названия вакансии на основе уникальности требуемых инструментов».</span>
+        <span lang-content="ua">«Ми не просто шукаємо слова, ми оцінюємо смислове навантаження кожної назви вакансії на основі унікальності необхідних інструментів».</span>
+        <span lang-content="en">"We don't just search for words, we evaluate the semantic load of each job title based on the uniqueness of the required tools."</span>
+        <span lang-content="de">"Wir suchen nicht nur nach Wörtern, wir bewerten die semantische Belastung jeder Berufsbezeichnung basierend auf der Einzigartigkeit der erforderlichen Tools."</span>
+    </div>
+</div>
+
+ <!-- ================= СЛАЙД 15.5: ТЕХНОЛОГІЧНИЙ СТЕК ================= -->
+    <div class="slide">
+        <h2 class="anim-up">
+            <span lang-content="ru">Технологический стек проекта</span>
+            <span lang-content="ua">Технологічний стек проєкту</span>
+            <span lang-content="en">Project Tech Stack</span>
+            <span lang-content="de">Technologie-Stack des Projekts</span>
+        </h2>
+        <p class="anim-up delay-1">
+            <span lang-content="ru">Программа построена на Python с использованием современных библиотек для сбора, анализа и визуализации данных.</span>
+            <span lang-content="ua">Програма побудована на Python з використанням сучасних бібліотек для збору, аналізу та візуалізації даних.</span>
+            <span lang-content="en">The program is built on Python using modern libraries for data collection, analysis, and visualization.</span>
+            <span lang-content="de">Das Programm basiert auf Python und verwendet moderne Bibliotheken für Datenerfassung, -analyse und -visualisierung.</span>
+        </p>
+
+        <div class="anim-up delay-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; flex: 1;">
+            
+            <!-- Python -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">🐍</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">Python 3.11</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Основной язык программирования. Используется для всей логики приложения, парсинга и анализа данных.</span><span lang-content="ua">Основна мова програмування. Використовується для всієї логіки додатка, парсингу та аналізу даних.</span><span lang-content="en">Main programming language. Used for all application logic, parsing, and data analysis.</span><span lang-content="de">Hauptprogrammiersprache. Wird für die gesamte Anwendungslogik, das Parsen und die Datenanalyse verwendet.</span></span>
+                </div>
+            </div>
+
+            <!-- Streamlit -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">🎈</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">Streamlit</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Фреймворк для создания веб-интерфейса. Позволяет писать UI на чистом Python без HTML/CSS/JS.</span><span lang-content="ua">Фреймворк для створення веб-інтерфейсу. Дозволяє писати UI на чистому Python без HTML/CSS/JS.</span><span lang-content="en">Framework for creating a web interface. Allows you to write UI in pure Python without HTML/CSS/JS.</span><span lang-content="de">Framework zur Erstellung einer Weboberfläche. Ermöglicht das Schreiben von UI in reinem Python ohne HTML/CSS/JS.</span></span>
+                </div>
+            </div>
+
+            <!-- Pandas -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">🐼</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">Pandas</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Обработка и анализ данных. Используется для очистки, фильтрации и агрегации собранных вакансий.</span><span lang-content="ua">Обробка та аналіз даних. Використовується для очищення, фільтрації та агрегації зібраних вакансій.</span><span lang-content="en">Data processing and analysis. Used for cleaning, filtering, and aggregating collected vacancies.</span><span lang-content="de">Datenverarbeitung und -analyse. Wird zum Bereinigen, Filtern und Aggregieren gesammelter Stellenangebote verwendet.</span></span>
+                </div>
+            </div>
+
+            <!-- BeautifulSoup & Requests -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">🕸️</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">BeautifulSoup & Requests</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Парсинг HTML-страниц государственного портала Arbeitsagentur и извлечение информации о вакансиях.</span><span lang-content="ua">Парсинг HTML-сторінок державного порталу Arbeitsagentur та вилучення інформації про вакансії.</span><span lang-content="en">Parsing HTML pages of the state portal Arbeitsagentur and extracting vacancy information.</span><span lang-content="de">Parsen von HTML-Seiten des staatlichen Portals Arbeitsagentur und Extrahieren von Stelleninformationen.</span></span>
+                </div>
+            </div>
+
+            <!-- JobSpy -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">💼</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">JobSpy</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Библиотека для сбора вакансий с LinkedIn и Indeed. Обрабатывает авторизацию и защиту от ботов.</span><span lang-content="ua">Бібліотека для збору вакансій з LinkedIn та Indeed. Обробляє авторизацію та захист від ботів.</span><span lang-content="en">Library for collecting vacancies from LinkedIn and Indeed. Handles authorization and bot protection.</span><span lang-content="de">Bibliothek zum Sammeln von Stellenangeboten von LinkedIn und Indeed. Behandelt Autorisierung und Bot-Schutz.</span></span>
+                </div>
+            </div>
+
+            <!-- Folium -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">🗺️</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">Folium & Geopy</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Создание интерактивных карт (Германия и Гамбург) с кластеризацией и геокодированием адресов.</span><span lang-content="ua">Створення інтерактивних карт (Німеччина та Гамбург) з кластеризацією та геокодуванням адрес.</span><span lang-content="en">Creating interactive maps (Germany and Hamburg) with clustering and address geocoding.</span><span lang-content="de">Erstellung interaktiver Karten (Deutschland und Hamburg) mit Clustering und Adress-Geocoding.</span></span>
+                </div>
+            </div>
+
+            <!-- FPDF2 -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">📄</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">FPDF2</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Генерация PDF-отчетов с таблицами. Включает очистку текста от неподдерживаемых символов Unicode.</span><span lang-content="ua">Генерація PDF-звітів з таблицями. Включає очищення тексту від непідтримуваних символів Unicode.</span><span lang-content="en">Generation of PDF reports with tables. Includes cleaning text from unsupported Unicode characters.</span><span lang-content="de">Erstellung von PDF-Berichten mit Tabellen. Beinhaltet die Bereinigung von Text von nicht unterstützten Unicode-Zeichen.</span></span>
+                </div>
+            </div>
+
+            <!-- PyPDF2 & Docx -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <div style="font-size: 32px; line-height: 1;">📑</div>
+                <div>
+                    <b style="color: #1e293b; display: block; font-size: 18px; margin-bottom: 4px;">PyPDF2 & python-docx</b>
+                    <span style="font-size: 14px; color: #475569;"><span lang-content="ru">Модуль для чтения резюме (Lebenslauf) в форматах PDF и DOCX для анализа навыков кандидата.</span><span lang-content="ua">Модуль для читання резюме (Lebenslauf) у форматах PDF та DOCX для аналізу навичок кандидата.</span><span lang-content="en">Module for reading resumes (Lebenslauf) in PDF and DOCX formats for analyzing candidate skills.</span><span lang-content="de">Modul zum Lesen von Lebensläufen (Lebenslauf) in den Formaten PDF und DOCX zur Analyse der Fähigkeiten von Bewerbern.</span></span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="quote anim-up delay-3" style="margin-top: 20px; font-size: 16px;">
+            <span lang-content="ru">«Все технологии подобраны так, чтобы обеспечить полный цикл: от сбора сырых данных до готового аналитического PDF-отчета и интерактивной карты».</span>
+            <span lang-content="ua">«Усі технології підібрані так, щоб забезпечити повний цикл: від збору сирих даних до готового аналітичного PDF-звіту та інтерактивної карти».</span>
+            <span lang-content="en">"All technologies are selected to provide a full cycle: from collecting raw data to a ready-made analytical PDF report and an interactive map."</span>
+            <span lang-content="de">"Alle Technologien sind so ausgewählt, dass sie einen vollständigen Zyklus ermöglichen: von der Sammlung von Rohdaten bis zum fertigen analytischen PDF-Bericht und einer interaktiven Karte."</span>
+        </div>
+    </div>
+	
+<!-- ================= СЛАЙД 20: ДИНАМИКА РЫНКА ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Динамика рынка: 26.10 → 02.11 → 04.11.2026</span>
+        <span lang-content="ua">Динаміка ринку: 26.10 → 02.11 → 04.11.2026</span>
+        <span lang-content="en">Market dynamics: 26.10 → 02.11 → 04.11.2026</span>
+        <span lang-content="de">Marktdynamik: 26.10 → 02.11 → 04.11.2026</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">За 9 дней число вакансий в сегменте AI/Automation в Германии выросло на <b>18,5%</b>. Прирост ускоряется: <b>+136</b> за первую неделю и ещё <b>+72</b> за следующие два дня.</span>
+        <span lang-content="ua">За 9 днів кількість вакансій у сегменті AI/Automation в Німеччині зросла на <b>18,5%</b>. Приріст прискорюється: <b>+136</b> за перший тиждень і ще <b>+72</b> за наступні два дні.</span>
+        <span lang-content="en">In 9 days, the number of vacancies in the AI/Automation segment in Germany grew by <b>18.5%</b>. The increase is accelerating: <b>+136</b> in the first week and another <b>+72</b> in the next two days.</span>
+        <span lang-content="de">In 9 Tagen ist die Anzahl der Stellenangebote im Segment KI/Automatisierung in Deutschland um <b>18,5%</b> gestiegen. Der Anstieg beschleunigt sich: <b>+136</b> in der ersten Woche und weitere <b>+72</b> in den nächsten zwei Tagen.</span>
+    </p>
+
+    <div class="anim-up delay-2" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 10px;">
+        <!-- 26.10 -->
+        <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; border-radius: 14px; padding: 18px; text-align: center;">
+            <div style="font-size: 13px; color: #1e40af; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">26.10.2026</div>
+            <div style="font-size: 38px; font-weight: 800; color: #1e3a8a; line-height: 1.1;">1 126</div>
+            <div style="font-size: 13px; color: #64748b;"><span lang-content="ru">вакансий</span><span lang-content="ua">вакансій</span><span lang-content="en">vacancies</span><span lang-content="de">Stellen</span></div>
+        </div>
+        <!-- 02.11 -->
+        <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #ddd6fe; border-radius: 14px; padding: 18px; text-align: center;">
+            <div style="font-size: 13px; color: #6b21a8; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">02.11.2026</div>
+            <div style="font-size: 38px; font-weight: 800; color: #4c1d95; line-height: 1.1;">1 262</div>
+            <div style="font-size: 13px; color: #64748b;"><span lang-content="ru">вакансий</span><span lang-content="ua">вакансій</span><span lang-content="en">vacancies</span><span lang-content="de">Stellen</span></div>
+        </div>
+        <!-- 04.11 -->
+        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #a7f3d0; border-radius: 14px; padding: 18px; text-align: center;">
+            <div style="font-size: 13px; color: #047857; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">04.11.2026</div>
+            <div style="font-size: 38px; font-weight: 800; color: #065f46; line-height: 1.1;">1 334</div>
+            <div style="font-size: 13px; color: #64748b;"><span lang-content="ru">вакансий</span><span lang-content="ua">вакансій</span><span lang-content="en">vacancies</span><span lang-content="de">Stellen</span></div>
+        </div>
+        <!-- Прирост -->
+        <div style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fed7aa; border-radius: 14px; padding: 18px; text-align: center;">
+            <div style="font-size: 13px; color: #c2410c; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;"><span lang-content="ru">Прирост за 9 дней</span><span lang-content="ua">Приріст за 9 днів</span><span lang-content="en">Growth in 9 days</span><span lang-content="de">Wachstum in 9 Tagen</span></div>
+            <div style="font-size: 38px; font-weight: 800; color: #9a3412; line-height: 1.1;">+208</div>
+            <div style="font-size: 13px; color: #64748b;"><span lang-content="ru">вакансий (+18,5%)</span><span lang-content="ua">вакансій (+18,5%)</span><span lang-content="en">vacancies (+18.5%)</span><span lang-content="de">Stellen (+18,5%)</span></div>
+        </div>
+    </div>
+
+    <div class="anim-up delay-3" id="plotly-dynamics" style="width: 100%; height: 300px; margin-top: 10px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
+
+    <div class="quote anim-up delay-3" style="font-size: 15px; margin-top: 8px;">
+        <b><span lang-content="ru">Интерпретация:</span><span lang-content="ua">Інтерпретація:</span><span lang-content="en">Interpretation:</span><span lang-content="de">Interpretation:</span></b> 
+        <span lang-content="ru">прирост замедлился (136 → 72 за два дня), но остаётся положительным. Рынок растёт, а не стагнирует. Для соискателей это означает сохраняющийся спрос и окно возможностей.</span>
+        <span lang-content="ua">приріст сповільнився (136 → 72 за два дні), але залишається позитивним. Ринок зростає, а не стагнує. Для шукачів це означає збережений попит і вікно можливостей.</span>
+        <span lang-content="en">growth has slowed down (136 → 72 in two days) but remains positive. The market is growing, not stagnating. For job seekers, this means continued demand and a window of opportunity.</span>
+        <span lang-content="de">Das Wachstum hat sich verlangsamt (136 → 72 in zwei Tagen), bleibt aber positiv. Der Markt wächst und stagniert nicht. Für Jobsuchende bedeutet dies eine anhaltende Nachfrage und ein Zeitfenster für Chancen.</span>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 21: ЯДРО VS НОВОЕ ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Что изменилось: ядро рынка vs новые сдвиги</span>
+        <span lang-content="ua">Що змінилося: ядро ринку vs нові зрушення</span>
+        <span lang-content="en">What has changed: market core vs new shifts</span>
+        <span lang-content="de">Was sich geändert hat: Marktkern vs. neue Verschiebungen</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Структура спроса осталась прежней. За 9 дней усилились те же пять содержательных направлений — Agentic AI, инфраструктура, Low-Code, Quereinsteiger и Finance-AI.</span>
+        <span lang-content="ua">Структура попиту залишилася колишньою. За 9 днів посилилися ті ж п'ять змістовних напрямків — Agentic AI, інфраструктура, Low-Code, Quereinsteiger та Finance-AI.</span>
+        <span lang-content="en">The demand structure remains the same. Over 9 days, the same five substantive directions intensified — Agentic AI, infrastructure, Low-Code, Quereinsteiger, and Finance-AI.</span>
+        <span lang-content="de">Die Nachfragestruktur bleibt gleich. Über 9 Tage haben sich dieselben fünf inhaltlichen Richtungen verstärkt – Agentic AI, Infrastruktur, Low-Code, Quereinsteiger und Finance-AI.</span>
+    </p>
+
+    <div class="anim-up delay-2" id="plotly-shifts" style="width: 100%; height: 400px; margin-top: 10px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
+
+    <div class="anim-up delay-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div style="background: #eff6ff; border-left: 4px solid #1f77b4; padding: 12px 15px; border-radius: 0 8px 8px 0; font-size: 14px; color: #1e3a8a;">
+            <b><span lang-content="ru">Стабильное ядро:</span><span lang-content="ua">Стабільне ядро:</span><span lang-content="en">Stable core:</span><span lang-content="de">Stabiler Kern:</span></b> <span lang-content="ru">AI & Automation Specialist, Prozessmanager, RPA/UiPath/n8n/Power Platform, крупные корпорации и консалтинг.</span><span lang-content="ua">AI & Automation Specialist, Prozessmanager, RPA/UiPath/n8n/Power Platform, великі корпорації та консалтинг.</span><span lang-content="en">AI & Automation Specialist, Prozessmanager, RPA/UiPath/n8n/Power Platform, large corporations and consulting.</span><span lang-content="de">AI & Automation Specialist, Prozessmanager, RPA/UiPath/n8n/Power Platform, Großkonzerne und Beratung.</span>
+        </div>
+        <div style="background: #f5f3ff; border-left: 4px solid #8b5cf6; padding: 12px 15px; border-radius: 0 8px 8px 0; font-size: 14px; color: #4c1d95;">
+            <b><span lang-content="ru">Новые сдвиги:</span><span lang-content="ua">Нові зрушення:</span><span lang-content="en">New shifts:</span><span lang-content="de">Neue Verschiebungen:</span></b> <span lang-content="ru">Agentic AI / LLM-роли, инфраструктура (MLOps, DevOps+AI), Low-Code, Quereinsteiger, Finance-AI.</span><span lang-content="ua">Agentic AI / LLM-ролі, інфраструктура (MLOps, DevOps+AI), Low-Code, Quereinsteiger, Finance-AI.</span><span lang-content="en">Agentic AI / LLM roles, infrastructure (MLOps, DevOps+AI), Low-Code, Quereinsteiger, Finance-AI.</span><span lang-content="de">Agentic AI / LLM-Rollen, Infrastruktur (MLOps, DevOps+AI), Low-Code, Quereinsteiger, Finance-AI.</span>
+        </div>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 22: ЗАРПЛАТЫ ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Зарплатные сигналы: диапазоны по грейдам</span>
+        <span lang-content="ua">Зарплатні сигнали: діапазони за грейдами</span>
+        <span lang-content="en">Salary signals: ranges by grade</span>
+        <span lang-content="de">Gehaltssignale: Bereiche nach Grad</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Зарплаты указаны лишь в части вакансий, но диапазоны показательны: медиана — <b>55–65 тыс. €</b> для специалиста с опытом 2–5 лет.</span>
+        <span lang-content="ua">Зарплати вказані лише в частині вакансій, але діапазони показові: медіана — <b>55–65 тис. €</b> для фахівця з досвідом 2–5 років.</span>
+        <span lang-content="en">Salaries are indicated only in some vacancies, but the ranges are indicative: the median is <b>55–65 thousand €</b> for a specialist with 2–5 years of experience.</span>
+        <span lang-content="de">Gehälter werden nur in einigen Stellenangeboten angegeben, aber die Bereiche sind bezeichnend: Der Median liegt bei <b>55–65 Tausend €</b> für einen Spezialisten mit 2–5 Jahren Erfahrung.</span>
+    </p>
+
+    <div class="anim-up delay-2" id="plotly-salary" style="width: 100%; height: 380px; margin-top: 10px; background: #fafafa; border-radius: 10px; border: 1px solid #e2e8f0;"></div>
+
+    <div class="anim-up delay-3" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 10px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Junior / Specialist</div>
+            <div style="font-size: 20px; font-weight: 800; color: #1e293b;">34,8–40 <span lang-content="ru">тыс. €</span><span lang-content="ua">тис. €</span><span lang-content="en">k €</span><span lang-content="de">Tsd. €</span></div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Middle</div>
+            <div style="font-size: 20px; font-weight: 800; color: #1e293b;">50–65 <span lang-content="ru">тыс. €</span><span lang-content="ua">тис. €</span><span lang-content="en">k €</span><span lang-content="de">Tsd. €</span></div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Senior</div>
+            <div style="font-size: 20px; font-weight: 800; color: #1e293b;">60–80 <span lang-content="ru">тыс. €</span><span lang-content="ua">тис. €</span><span lang-content="en">k €</span><span lang-content="de">Tsd. €</span></div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center;">
+            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Leadership</div>
+            <div style="font-size: 20px; font-weight: 800; color: #1e293b;">100–150 <span lang-content="ru">тыс. €</span><span lang-content="ua">тис. €</span><span lang-content="en">k €</span><span lang-content="de">Tsd. €</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= СЛАЙД 23: ЗРЕЛОСТЬ РЫНКА ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Зрелость рынка: радар трендов</span>
+        <span lang-content="ua">Зрілість ринку: радар трендів</span>
+        <span lang-content="en">Market maturity: trend radar</span>
+        <span lang-content="de">Marktreife: Trendradar</span>
+    </h2>
+    <p class="anim-up delay-1">
+        <span lang-content="ru">Пять измерений показывают, что за 9 дней рынок стал <b>больше, глубже и заметно более инженерным</b>.</span>
+        <span lang-content="ua">П'ять вимірів показують, що за 9 днів ринок став <b>більшим, глибшим і помітно більш інженерним</b>.</span>
+        <span lang-content="en">Five dimensions show that in 9 days the market has become <b>larger, deeper, and noticeably more engineering-oriented</b>.</span>
+        <span lang-content="de">Fünf Dimensionen zeigen, dass der Markt in 9 Tagen <b>größer, tiefer und deutlich technischer</b> geworden ist.</span>
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; flex: 1; margin-top: 10px;">
+        <div class="anim-up delay-2" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; display: flex; justify-content: center; align-items: center;">
+            <div id="plotly-radar" style="width: 100%; height: 100%; min-height: 380px;"></div>
+        </div>
+
+        <div class="anim-up delay-3" style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;">
+                <div style="font-size: 22px;">📈</div>
+                <div style="font-size: 14px; color: #475569;"><b style="color: #1e293b; display: block; margin-bottom: 3px;"><span lang-content="ru">Рост, а не сжатие</span><span lang-content="ua">Зростання, а не стиснення</span><span lang-content="en">Growth, not contraction</span><span lang-content="de">Wachstum, keine Schrumpfung</span></b><span lang-content="ru">+18,5% за 9 дней — устойчивый поток, а не шум.</span><span lang-content="ua">+18,5% за 9 днів — стійкий потік, а не шум.</span><span lang-content="en">+18.5% in 9 days — a steady flow, not noise.</span><span lang-content="de">+18,5% in 9 Tagen – ein stetiger Fluss, kein Rauschen.</span></div>
+            </div>
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;">
+                <div style="font-size: 22px;">🧱</div>
+                <div style="font-size: 14px; color: #475569;"><b style="color: #1e293b; display: block; margin-bottom: 3px;"><span lang-content="ru">Двухуровневый спрос</span><span lang-content="ua">Дворівневий попит</span><span lang-content="en">Two-tier demand</span><span lang-content="de">Zweistufige Nachfrage</span></b><span lang-content="ru">Массовое внедрение vs инженерия AI-платформ.</span><span lang-content="ua">Масове впровадження vs інженерія AI-платформ.</span><span lang-content="en">Mass adoption vs engineering of AI platforms.</span><span lang-content="de">Masseneinführung vs. Engineering von KI-Plattformen.</span></div>
+            </div>
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;">
+                <div style="font-size: 22px;">🌍</div>
+                <div style="font-size: 14px; color: #475569;"><b style="color: #1e293b; display: block; margin-bottom: 3px;"><span lang-content="ru">Выход за пределы IT</span><span lang-content="ua">Вихід за межі IT</span><span lang-content="en">Going beyond IT</span><span lang-content="de">Über IT hinausgehen</span></b><span lang-content="ru">Финансы, HR, логистика, страхование, госсектор.</span><span lang-content="ua">Фінанси, HR, логістика, страхування, держсектор.</span><span lang-content="en">Finance, HR, logistics, insurance, public sector.</span><span lang-content="de">Finanzen, HR, Logistik, Versicherungen, öffentlicher Sektor.</span></div>
+            </div>
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;">
+                <div style="font-size: 22px;">🧰</div>
+                <div style="font-size: 14px; color: #475569;"><b style="color: #1e293b; display: block; margin-bottom: 3px;"><span lang-content="ru">Консолидация стека</span><span lang-content="ua">Консолідація стеку</span><span lang-content="en">Stack consolidation</span><span lang-content="de">Stack-Konsolidierung</span></b><span lang-content="ru">UiPath, Power Platform, n8n, Make, Copilot Studio, SAP BTP.</span><span lang-content="ua">UiPath, Power Platform, n8n, Make, Copilot Studio, SAP BTP.</span><span lang-content="en">UiPath, Power Platform, n8n, Make, Copilot Studio, SAP BTP.</span><span lang-content="de">UiPath, Power Platform, n8n, Make, Copilot Studio, SAP BTP.</span></div>
+            </div>
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;">
+                <div style="font-size: 22px;">🚪</div>
+                <div style="font-size: 14px; color: #475569;"><b style="color: #1e293b; display: block; margin-bottom: 3px;"><span lang-content="ru">Дефицит кадров</span><span lang-content="ua">Дефіцит кадрів</span><span lang-content="en">Staff shortage</span><span lang-content="de">Personalmangel</span></b><span lang-content="ru">Появление Quereinsteiger-вакансий снижает барьер входа.</span><span lang-content="ua">Поява Quereinsteiger-вакансій знижує бар'єр входу.</span><span lang-content="en">The emergence of Quereinsteiger vacancies lowers the entry barrier.</span><span lang-content="de">Das Aufkommen von Quereinsteiger-Stellen senkt die Eintrittsbarriere.</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <!-- ================= НОВЫЙ СЛАЙД: ЭВОЛЮЦИЯ В ЭКОСИСТЕМУ ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Эволюция: от парсера к личному AI-ассистенту</span>
+        <span lang-content="ua">Еволюція: від парсера до особистого AI-асистента</span>
+        <span lang-content="en">Evolution: from parser to personal AI assistant</span>
+        <span lang-content="de">Evolution: vom Parser zum persönlichen KI-Assistenten</span>
+    </h2>
+    
+    <div class="anim-up delay-1" style="font-size: 20px; line-height: 1.5; color: #333; margin-bottom: 20px; background: #f8fafc; padding: 15px 20px; border-left: 5px solid #8b5cf6; border-radius: 0 8px 8px 0;">
+        <span lang-content="ru">Изначально <b>AILMR</b> создавался как аналитический инструмент. Но в процессе работы стало ясно: соискателю нужна помощь не только в сборе данных, но и в <b>прохождении всего пути до оффера</b>. Так программа превратилась в полноценную экосистему.</span>
+        <span lang-content="ua">Спочатку <b>AILMR</b> створювався як аналітичний інструмент. Але в процесі роботи стало ясно: шукачеві потрібна допомога не лише у зборі даних, а й у <b>проходженні всього шляху до оферу</b>. Так програма перетворилася на повноцінну екосистему.</span>
+        <span lang-content="en">Initially, <b>AILMR</b> was created as an analytical tool. But in the process, it became clear: a job seeker needs help not only in collecting data but also in <b>going through the entire path to an offer</b>. So the program turned into a full-fledged ecosystem.</span>
+        <span lang-content="de">Ursprünglich wurde <b>AILMR</b> als analytisches Tool erstellt. Aber im Laufe der Arbeit wurde klar: Ein Jobsuchender braucht nicht nur Hilfe bei der Datenerfassung, sondern auch beim <b>Durchlaufen des gesamten Weges zu einem Angebot</b>. So wurde das Programm zu einem vollwertigen Ökosystem.</span>
+    </div>
+
+    <div class="anim-up delay-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; flex: 1; margin-top: 10px;">
+        
+        <!-- Стадия 1 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 40px; margin-bottom: 15px;">🔍</div>
+            <h3 style="color: #1f77b4; font-size: 20px; margin-bottom: 10px;">1. Research</h3>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.4;">
+                <span lang-content="ru">Сбор вакансий с 4 источников, анализ трендов и востребованных навыков на рынке Германии.</span>
+                <span lang-content="ua">Збір вакансій з 4 джерел, аналіз трендів та затребуваних навичок на ринку Німеччини.</span>
+                <span lang-content="en">Collecting vacancies from 4 sources, analyzing trends and in-demand skills in the German market.</span>
+                <span lang-content="de">Sammlung von Stellenangeboten aus 4 Quellen, Analyse von Trends und gefragten Fähigkeiten auf dem deutschen Markt.</span>
+            </p>
+        </div>
+
+        <!-- Стадия 2 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 40px; margin-bottom: 15px;">🎯</div>
+            <h3 style="color: #8b5cf6; font-size: 20px; margin-bottom: 10px;">2. Assessment</h3>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.4;">
+                <span lang-content="ru">Gap-анализ (сравнение CV с вакансией) и <b>ATS-симулятор</b> для проверки проходимости резюме.</span>
+                <span lang-content="ua">Gap-аналіз (порівняння CV з вакансією) та <b>ATS-симулятор</b> для перевірки прохідності резюме.</span>
+                <span lang-content="en">Gap analysis (comparing CV with vacancy) and <b>ATS simulator</b> to check resume passability.</span>
+                <span lang-content="de">Gap-Analyse (Vergleich des Lebenslaufs mit der Stelle) und <b>ATS-Simulator</b> zur Überprüfung der Passierbarkeit des Lebenslaufs.</span>
+            </p>
+        </div>
+
+        <!-- Стадия 3 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 40px; margin-bottom: 15px;">🚀</div>
+            <h3 style="color: #10b981; font-size: 20px; margin-bottom: 10px;">3. Preparation</h3>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.4;">
+                <span lang-content="ru">Генерация Anschreiben через локальный ИИ и тренировка интервью (Mock Interview) по методу STAR.</span>
+                <span lang-content="ua">Генерація Anschreiben через локальний AI та тренування інтерв'ю (Mock Interview) за методом STAR.</span>
+                <span lang-content="en">Generating Anschreiben via local AI and interview training (Mock Interview) using the STAR method.</span>
+                <span lang-content="de">Generierung von Anschreiben über lokale KI und Interview-Training (Mock Interview) nach der STAR-Methode.</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="quote anim-up delay-3" style="margin-top: 20px; font-size: 16px;">
+        <span lang-content="ru">«Программа выполняет полный цикл: находит вакансии, говорит, куда лучше подаваться, генерирует письмо и готовит к собеседованию».</span>
+        <span lang-content="ua">«Програма виконує повний цикл: знаходить вакансії, каже, куди краще подаватися, генерує лист і готує до співбесіди».</span>
+        <span lang-content="en">"The program performs a full cycle: finds vacancies, tells where it is better to apply, generates a letter, and prepares for an interview."</span>
+        <span lang-content="de">"Das Programm führt einen vollständigen Zyklus durch: Es findet Stellenangebote, sagt, wo man sich besser bewerben sollte, generiert ein Anschreiben und bereitet auf das Vorstellungsgespräch vor."</span>
+    </div>
+</div>
+
+<!-- ================= НОВЫЙ СЛАЙД: ATS И ЛОКАЛЬНЫЙ ИИ ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Новые возможности: ATS и Локальный ИИ</span>
+        <span lang-content="ua">Нові можливості: ATS та Локальний AI</span>
+        <span lang-content="en">New features: ATS and Local AI</span>
+        <span lang-content="de">Neue Funktionen: ATS und lokale KI</span>
+    </h2>
+    
+    <div class="anim-up delay-1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; margin-top: 20px;">
+        
+        <!-- Блок ATS -->
+        <div style="background: #fff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(31, 119, 180, 0.1);">
+            <div style="font-size: 36px; margin-bottom: 15px;">🛡️</div>
+            <h3 style="color: #1e40af; font-size: 22px; margin-bottom: 15px;">ATS-Simulator</h3>
+            <p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 15px;">
+                <span lang-content="ru">В Германии многие крупные компании используют Applicant Tracking Systems (ATS). Программа анализирует ваш PDF так же, как это делает робот:</span>
+                <span lang-content="ua">У Німеччині багато великих компаній використовують Applicant Tracking Systems (ATS). Програма аналізує ваш PDF так само, як це робить робот:</span>
+                <span lang-content="en">In Germany, many large companies use Applicant Tracking Systems (ATS). The program analyzes your PDF just like a robot does:</span>
+                <span lang-content="de">In Deutschland nutzen viele große Unternehmen Applicant Tracking Systems (ATS). Das Programm analysiert Ihr PDF genau wie ein Roboter:</span>
+            </p>
+            <ul style="font-size: 14px; color: #334155; line-height: 1.5; padding-left: 20px; margin: 0;">
+                <li style="margin-bottom: 8px;"><span lang-content="ru">Проверка «убийц» ATS (таблицы, колонтитулы, иконки).</span><span lang-content="ua">Перевірка «вбивць» ATS (таблиці, колонтитули, іконки).</span><span lang-content="en">Checking ATS killers (tables, headers, icons).</span><span lang-content="de">Prüfung von ATS-Killern (Tabellen, Kopfzeilen, Symbole).</span></li>
+                <li style="margin-bottom: 8px;"><span lang-content="ru">Оценка структуры (стандартные заголовки).</span><span lang-content="ua">Оцінка структури (стандартні заголовки).</span><span lang-content="en">Structure evaluation (standard headings).</span><span lang-content="de">Bewertung der Struktur (Standardüberschriften).</span></li>
+                <li><span lang-content="ru">Keyword-матчинг с текстом вакансии.</span><span lang-content="ua">Keyword-матчинг з текстом вакансії.</span><span lang-content="en">Keyword matching with the vacancy text.</span><span lang-content="de">Keyword-Matching mit dem Stellentext.</span></li>
+            </ul>
+        </div>
+
+        <!-- Блок Локального ИИ -->
+        <div style="background: #fff; border: 2px solid #ddd6fe; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.1);">
+            <div style="font-size: 36px; margin-bottom: 15px;">🧠</div>
+            <h3 style="color: #6b21a8; font-size: 22px; margin-bottom: 15px;"><span lang-content="ru">Локальный ИИ (Ollama)</span><span lang-content="ua">Локальний AI (Ollama)</span><span lang-content="en">Local AI (Ollama)</span><span lang-content="de">Lokale KI (Ollama)</span></h3>
+            <p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 15px;">
+                <span lang-content="ru">Генерация документов происходит <b>на вашем компьютере</b> без передачи данных в облака (OpenAI):</span>
+                <span lang-content="ua">Генерація документів відбувається <b>на вашому комп'ютері</b> без передачі даних у хмари (OpenAI):</span>
+                <span lang-content="en">Document generation happens <b>on your computer</b> without transferring data to clouds (OpenAI):</span>
+                <span lang-content="de">Die Dokumentenerstellung erfolgt <b>auf Ihrem Computer</b> ohne Datenübertragung in die Cloud (OpenAI):</span>
+            </p>
+            <ul style="font-size: 14px; color: #334155; line-height: 1.5; padding-left: 20px; margin: 0;">
+                <li style="margin-bottom: 8px;"><span lang-content="ru">Полная конфиденциальность ваших резюме.</span><span lang-content="ua">Повна конфіденційність ваших резюме.</span><span lang-content="en">Complete privacy of your resumes.</span><span lang-content="de">Vollständige Privatsphäre Ihrer Lebensläufe.</span></li>
+                <li style="margin-bottom: 8px;"><span lang-content="ru">Нулевые затраты (нет подписок и лимитов).</span><span lang-content="ua">Нульові витрати (немає підписок та лімітів).</span><span lang-content="en">Zero costs (no subscriptions or limits).</span><span lang-content="de">Null Kosten (keine Abonnements oder Limits).</span></li>
+                <li><span lang-content="ru">Умный Fallback: если одна модель зависла, включается резервная.</span><span lang-content="ua">Розумний Fallback: якщо одна модель зависла, вмикається резервна.</span><span lang-content="en">Smart fallback: if one model freezes, a backup is activated.</span><span lang-content="de">Intelligenter Fallback: Wenn ein Modell einfriert, wird ein Backup aktiviert.</span></li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= НОВЫЙ СЛАЙД: MOCK INTERVIEW ================= -->
+<div class="slide">
+    <h2 class="anim-up">
+        <span lang-content="ru">Mock Interview: тренажер собеседований</span>
+        <span lang-content="ua">Mock Interview: тренажер співбесід</span>
+        <span lang-content="en">Mock Interview: interview simulator</span>
+        <span lang-content="de">Mock Interview: Interview-Simulator</span>
+    </h2>
+    
+    <div class="anim-up delay-1" style="font-size: 18px; line-height: 1.5; color: #444; margin-bottom: 20px;">
+        <span lang-content="ru">Одно дело — написать хорошее резюме, другое — уверенно рассказать о себе на интервью. Встроенный модуль помогает отработать ответы по методике <b>STAR</b> (Situation, Task, Action, Result).</span>
+        <span lang-content="ua">Одна справа — написати гарне резюме, інша — впевнено розповісти про себе на співбесіді. Вбудований модуль допомагає відпрацювати відповіді за методикою <b>STAR</b> (Situation, Task, Action, Result).</span>
+        <span lang-content="en">Writing a good resume is one thing, but confidently talking about yourself in an interview is another. The built-in module helps you practice answers using the <b>STAR</b> method (Situation, Task, Action, Result).</span>
+        <span lang-content="de">Einen guten Lebenslauf zu schreiben ist eine Sache, aber selbstbewusst im Vorstellungsgespräch über sich selbst zu sprechen, eine andere. Das integrierte Modul hilft Ihnen, Antworten nach der <b>STAR</b>-Methode (Situation, Task, Action, Result) zu üben.</span>
+    </div>
+
+    <div class="anim-up delay-2" style="display: flex; gap: 20px; flex: 1;">
+        <div style="flex: 1; background: #0f172a; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: center; border: 1px solid #334155;">
+            <div style="text-align: center; font-size: 50px; margin-bottom: 15px;">🎤</div>
+            <p style="color: #cbd5e1; font-size: 16px; text-align: center; line-height: 1.5;">
+                <span lang-content="ru">Вы записываете свой ответ на один из 15+ вопросов прямо в браузере.</span>
+                <span lang-content="ua">Ви записуєте свою відповідь на одне з 15+ питань прямо в браузері.</span>
+                <span lang-content="en">You record your answer to one of 15+ questions directly in the browser.</span>
+                <span lang-content="de">Sie zeichnen Ihre Antwort auf eine der 15+ Fragen direkt im Browser auf.</span>
+            </p>
+        </div>
+        
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px;">
+                <div style="background: #e0f2fe; padding: 10px; border-radius: 8px; font-size: 20px;">🗣️</div>
+                <div>
+                    <b style="color: #1e293b; font-size: 15px; display: block;"><span lang-content="ru">Локальная расшифровка</span><span lang-content="ua">Локальна розшифровка</span><span lang-content="en">Local transcription</span><span lang-content="de">Lokale Transkription</span></b>
+                    <span style="color: #64748b; font-size: 13px;"><span lang-content="ru">Модель Whisper переводит вашу речь в текст.</span><span lang-content="ua">Модель Whisper переводить вашу мову в текст.</span><span lang-content="en">The Whisper model converts your speech to text.</span><span lang-content="de">Das Whisper-Modell wandelt Ihre Sprache in Text um.</span></span>
+                </div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px;">
+                <div style="background: #f3e8ff; padding: 10px; border-radius: 8px; font-size: 20px;">📊</div>
+                <div>
+                    <b style="color: #1e293b; font-size: 15px; display: block;"><span lang-content="ru">Анализ по методу STAR</span><span lang-content="ua">Аналіз за методом STAR</span><span lang-content="en">STAR method analysis</span><span lang-content="de">Analyse nach der STAR-Methode</span></b>
+                    <span style="color: #64748b; font-size: 13px;"><span lang-content="ru">Проверка наличия Ситуации, Задачи, Действия и Результата.</span><span lang-content="ua">Перевірка наявності Ситуації, Завдання, Дії та Результату.</span><span lang-content="en">Checking for Situation, Task, Action, and Result.</span><span lang-content="de">Überprüfung auf Situation, Aufgabe, Aktion und Ergebnis.</span></span>
+                </div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px;">
+                <div style="background: #dcfce7; padding: 10px; border-radius: 8px; font-size: 20px;">💡</div>
+                <div>
+                    <b style="color: #1e293b; font-size: 15px; display: block;"><span lang-content="ru">Умный фидбек</span><span lang-content="ua">Розумний фідбек</span><span lang-content="en">Smart feedback</span><span lang-content="de">Intelligentes Feedback</span></b>
+                    <span style="color: #64748b; font-size: 13px;"><span lang-content="ru">Программа подскажет, если нет цифр в результате или есть слова-паразиты.</span><span lang-content="ua">Програма підкаже, якщо немає цифр у результаті або є слова-паразити.</span><span lang-content="en">The program will prompt you if there are no numbers in the result or if there are filler words.</span><span lang-content="de">Das Programm gibt Ihnen einen Hinweis, wenn im Ergebnis keine Zahlen enthalten sind oder Füllwörter verwendet werden.</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+ <!-- ================= СЛАЙД 19: ФІНАЛ (З АНІМАЦІЄЮ) ================= -->
+    <div class="slide final-slide" id="final-slide-container" style="overflow: hidden; position: relative;">
+        
+        <h1 class="anim-up clickable-title" id="click-title" onclick="triggerTrainAnimation()" style="cursor: pointer; transition: all 0.5s;">
+            <span lang-content="ru">Спасибо за внимание!</span>
+            <span lang-content="ua">Дякую за увагу!</span>
+            <span lang-content="en">Thank you for your attention!</span>
+            <span lang-content="de">Vielen Dank für Ihre Aufmerksamkeit!</span>
+        </h1>
+        <p class="anim-up delay-1" id="final-subtitle">
+            <span lang-content="ru">Проект AI Labor Market Research (AILMR)</span>
+            <span lang-content="ua">Проєкт AI Labor Market Research (AILMR)</span>
+            <span lang-content="en">AI Labor Market Research (AILMR) Project</span>
+            <span lang-content="de">Projekt AI Labor Market Research (AILMR)</span>
+        </p>
+
+        <div class="anim-up delay-2 collapsing-content" id="final-stats" style="display: flex; gap: 20px; margin-top: 20px; justify-content: center;">
+            <div class="acronym-card" style="min-width: 150px;">
+                <div class="acronym-letter" style="font-size: 32px;">19</div>
+                <div class="acronym-word"><span lang-content="ru">Скиллов</span><span lang-content="ua">Скілів</span><span lang-content="en">Skills</span><span lang-content="de">Skills</span></div>
+            </div>
+            <div class="acronym-card" style="min-width: 150px;">
+                <div class="acronym-letter" style="font-size: 32px;">14</div>
+                <div class="acronym-word"><span lang-content="ru">Запросов</span><span lang-content="ua">Запитів</span><span lang-content="en">Queries</span><span lang-content="de">Abfragen</span></div>
+            </div>
+            <div class="acronym-card" style="min-width: 150px;">
+                <div class="acronym-letter" style="font-size: 32px;">3</div>
+                <div class="acronym-word"><span lang-content="ru">Источника</span><span lang-content="ua">Джерела</span><span lang-content="en">Sources</span><span lang-content="de">Quellen</span></div>
+            </div>
+        </div>
+
+        <div class="author-info anim-up delay-3" style="margin-top: 50px; font-size: 20px; color: #cbd5e1;" id="final-author">
+            <p>Автор / Author / Autor: Serhiy Hromyko</p>
+        </div>
+
+        <!-- Контейнер для потяга -->
+        <div class="train-container" id="train-container">
+            <!-- Реалістичний SVG-потяг -->
+            <svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Дим -->
+                <circle cx="60" cy="25" r="10" fill="#ccc" opacity="0.6">
+                    <animate attributeName="cy" values="25;10;0" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.6;0.2;0" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="r" values="10;20;30" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="50" cy="20" r="8" fill="#ccc" opacity="0.5">
+                    <animate attributeName="cy" values="20;5;-5" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.5;0.1;0" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="r" values="8;15;25" dur="1.5s" repeatCount="indefinite" />
+                </circle>
+
+                <!-- Локомотив -->
+                <rect x="40" y="50" width="80" height="35" rx="5" fill="#2c3e50" />
+                <rect x="40" y="50" width="80" height="10" rx="2" fill="#1a252f" />
+                <!-- Вікно кабіни -->
+                <rect x="50" y="40" width="40" height="20" rx="3" fill="#3498db" />
+                <rect x="50" y="40" width="40" height="20" rx="3" fill="none" stroke="#1a252f" stroke-width="2" />
+                <!-- Труба -->
+                <rect x="55" y="30" width="10" height="20" fill="#7f8c8d" />
+                <rect x="50" y="25" width="20" height="5" fill="#95a5a6" />
+                <!-- Колеса -->
+                <circle cx="55" cy="85" r="10" fill="#1a252f" />
+                <circle cx="55" cy="85" r="4" fill="#7f8c8d" />
+                <circle cx="95" cy="85" r="10" fill="#1a252f" />
+                <circle cx="95" cy="85" r="4" fill="#7f8c8d" />
+
+                <!-- Вагон 1 -->
+                <rect x="130" y="55" width="70" height="30" rx="5" fill="#34495e" />
+                <rect x="135" y="60" width="15" height="15" rx="2" fill="#ecf0f1" />
+                <rect x="155" y="60" width="15" height="15" rx="2" fill="#ecf0f1" />
+                <rect x="175" y="60" width="15" height="15" rx="2" fill="#ecf0f1" />
+                <!-- Колеса -->
+                <circle cx="145" cy="85" r="8" fill="#1a252f" />
+                <circle cx="185" cy="85" r="8" fill="#1a252f" />
+
+                <!-- Вагон 2 -->
+                <rect x="210" y="55" width="70" height="30" rx="5" fill="#34495e" />
+                <rect x="215" y="60" width="15" height="15" rx="2" fill="#ecf0f1" />
+                <rect x="235" y="60" width="15" height="15" rx="2" fill="#ecf0f1" />
+                <rect x="255" y="60" width="15" height="15" rx="2" fill="#ecf0f1" />
+                <!-- Колеса -->
+                <circle cx="225" cy="85" r="8" fill="#1a252f" />
+                <circle cx="265" cy="85" r="8" fill="#1a252f" />
+            </svg>
+        </div>
+    </div>
+
+<!-- ================= СКРИПТЫ ================= -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+<script>
+// --- 1. ПЕРЕКЛЮЧЕНИЕ ЯЗЫКОВ И ПЕРЕРИСОВКА ГРАФИКОВ ---
+function setLang(lang) {
+    document.body.setAttribute('data-lang', lang);
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if(btn.textContent.trim() === lang.toUpperCase()) btn.classList.add('active');
+    });
+    drawAllPlots(lang); // Перерисовываем графики
+}
+
+// --- 2. АНИМАЦИЯ ПОЯВЛЕНИЯ ---
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        document.querySelectorAll('.anim-up').forEach(function(el) {
+            el.classList.add('visible');
+        });
+    }, 100);
+    drawAllPlots('ru'); // Инициализация графиков
+});
+
+// --- 3. ВРАЩЕНИЕ ОРБИТЫ ---
+window.addEventListener('load', () => {
+    const items = document.querySelectorAll('.orbit-item');
+    const container = document.querySelector('.orbit-container');
+    const scaleFactor = 0.75;
+
+    function updatePositions() {
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const time = Date.now() / 1000;
+
+        items.forEach(item => {
+            const radius = parseFloat(item.dataset.radius);
+            const speed = parseFloat(item.dataset.speed);
+            const baseAngle = parseFloat(item.dataset.angle);
+            const angle = baseAngle + (time * speed * 6);
+            const rad = angle * (Math.PI / 180);
+            const scaledRadius = radius * scaleFactor;
+            const x = centerX + scaledRadius * Math.cos(rad);
+            const y = centerY + scaledRadius * Math.sin(rad);
+            const itemRect = item.getBoundingClientRect();
+            item.style.left = `${x - itemRect.width / 2}px`;
+            item.style.top = `${y - itemRect.height / 2}px`;
+        });
+        requestAnimationFrame(updatePositions);
+    }
+    if (items.length > 0 && container) updatePositions();
+});
+
+// --- 4. ГЕНЕРАЦИЯ МАТРИЦЫ ---
+document.addEventListener('DOMContentLoaded', function() {
+    function fillMatrix(containerId, type) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const numColumns = 25;
+        const charsBlue = ["0x1A", "0x2B", "0xFF", "0x00", "0x7F", "0x3C", "0x9D", "0xE1", "{ }", "[ ]", "=>", "!=", "&&", "||", "null"];
+        const charsGreen = ["0", "1", "x", "u", "F", "[", "]", "(", ")", "{", "}", "=", ">", "|", "!", "A", "B", "0x0", "0x1"]; 
+        const chars = type === 'green' ? charsGreen : charsBlue;
+
+        for (let i = 0; i < numColumns; i++) {
+            const col = document.createElement('div');
+            col.className = 'matrix-col';
+            const duration = (Math.random() * 3 + 3).toFixed(2);
+            const delay = (Math.random() * 3).toFixed(2);
+            col.style.animationDuration = `${duration}s`;
+            col.style.animationDelay = `-${delay}s`;
+            
+            let digitsHtml = "";
+            for (let j = 0; j < 20; j++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                let color, weight, shadow;
+                const rgb = type === 'green' ? '16, 185, 129' : '0, 255, 255'; 
+                
+                if (j === 19) {
+                    color = "#ffffff"; weight = "bold"; 
+                    shadow = `0 0 10px #fff, 0 0 20px rgb(${rgb})`;
+                } else {
+                    const opacity = 0.3 + (0.7 * (j / 20));
+                    color = `rgba(${rgb}, ${opacity})`;
+                    weight = opacity > 0.7 ? "bold" : "normal";
+                    shadow = `0 0 8px rgba(${rgb}, ${opacity})`;
+                }
+                digitsHtml += `<span style="color: ${color}; font-weight: ${weight}; text-shadow: ${shadow}; font-size: 12px;">${char}</span><br>`;
+            }
+            col.innerHTML = digitsHtml;
+            container.appendChild(col);
+        }
+    }
+
+    fillMatrix('matrix-bg', 'blue');
+    fillMatrix('matrix-bg-blue', 'blue');
+    fillMatrix('matrix-bg-green', 'green');
+});
+
+// --- 5. АНИМАЦИЯ ПОЕЗДА ---
+function triggerTrainAnimation() {
+    const stats = document.getElementById('final-stats');
+    const author = document.getElementById('final-author');
+    const subtitle = document.getElementById('final-subtitle');
+    const train = document.getElementById('train-container');
+    const title = document.getElementById('click-title');
+
+    if (stats) stats.classList.add('shrink');
+    if (author) author.classList.add('shrink');
+    if (subtitle) subtitle.classList.add('shrink');
+    if (title) title.classList.add('shrink');
+
+    setTimeout(() => {
+        if (train) train.classList.add('go');
+    }, 800);
+}
+
+// --- 6. ОТРИСОВКА ВСЕХ ГРАФИКОВ (С ПОДДЕРЖКОЙ ЯЗЫКОВ) ---
+function drawAllPlots(lang) {
+    if (!window.Plotly) return;
+    
+    const isRU = lang === 'ru';
+    const isUA = lang === 'ua';
+    const isDE = lang === 'de';
+    
+    // --- 6.1 БАР ЧАРТ (СЛАЙД 15) ---
+    const barEl = document.getElementById('plotly-bar');
+    if (barEl) {
+        const textVac = isRU ? 'Вакансий' : (isUA ? 'Вакансій' : (isDE ? 'Stellen' : 'Vacancies'));
+        const textMent = isRU ? 'Упоминаний' : (isUA ? 'Згадок' : (isDE ? 'Erwähnungen' : 'Mentions'));
+        const titleX = isRU ? 'Количество' : (isUA ? 'Кількість' : (isDE ? 'Anzahl' : 'Quantity'));
+        
+        const skills = ['n8n', 'Claude', 'REST API', 'MCP', 'Webhooks', 'ChatGPT', 'ElevenLabs'];
+        const vacancies = [7, 7, 7, 2, 2, 1, 1];
+        const mentions = [11, 10, 8, 4, 2, 2, 1];
+        
+        const barData = [
+            { x: vacancies, y: skills, name: textVac, type: 'bar', orientation: 'h', marker: { color: '#1f77b4' }, hovertemplate: '<b>%{y}</b><br>' + textVac + ': %{x}<extra></extra>' },
+            { x: mentions, y: skills, name: textMent, type: 'bar', orientation: 'h', marker: { color: '#8b5cf6' }, hovertemplate: '<b>%{y}</b><br>' + textMent + ': %{x}<extra></extra>' }
+        ];
+        const barLayout = {
+            barmode: 'group', margin: { l: 140, r: 20, t: 20, b: 40 }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Inter, sans-serif', size: 13 }, legend: { orientation: 'h', y: -0.15 },
+            xaxis: { title: titleX, gridcolor: '#e2e8f0' }, yaxis: { automargin: true }, height: 380
+        };
+        Plotly.react('plotly-bar', barData, barLayout, { responsive: true, displayModeBar: false });
+    }
+    
+    // --- 6.2 SUNBURST (СЛАЙД 16) ---
+    const sunEl = document.getElementById('plotly-sunburst');
+    if (sunEl) {
+        const textMent = isRU ? 'Упоминаний' : (isUA ? 'Згадок' : (isDE ? 'Erwähnungen' : 'Mentions'));
+        const labels = ['All', 'Automation', 'LLM', 'API', 'Voice', 'n8n', 'Webhooks', 'Claude', 'ChatGPT', 'REST API', 'MCP', 'ElevenLabs'];
+        const parents = ['', 'All', 'All', 'All', 'All', 'Automation', 'Automation', 'LLM', 'LLM', 'API', 'API', 'Voice'];
+        const values = [38, 13, 12, 12, 1, 11, 2, 10, 2, 8, 4, 1];
+        const sunData = [{
+            type: 'sunburst', labels: labels, parents: parents, values: values, branchvalues: 'total',
+            marker: { colors: ['#e2e8f0', '#1f77b4', '#8b5cf6', '#3b82f6', '#10b981', '#60a5fa', '#93c5fd', '#a78bfa', '#c4b5fd', '#3b82f6', '#93c5fd', '#34d399'] },
+            hovertemplate: '<b>%{label}</b><br>' + textMent + ': %{value}<extra></extra>'
+        }];
+        const sunLayout = { margin: { l: 10, r: 10, t: 10, b: 10 }, paper_bgcolor: 'rgba(0,0,0,0)', font: { family: 'Inter, sans-serif', size: 13 }, height: 380, uniformtext: { minsize: 10, mode: 'hide' } };
+        Plotly.react('plotly-sunburst', sunData, sunLayout, { responsive: true, displayModeBar: false });
+    }
+
+    const baseLayout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { family: 'Inter, sans-serif', size: 13, color: '#334155' }, margin: { l: 60, r: 30, t: 20, b: 50 } };
+
+    // --- 6.3 ДИНАМИКА (СЛАЙД 20) ---
+    const dynEl = document.getElementById('plotly-dynamics');
+    if (dynEl) {
+        const textVac = isRU ? 'Вакансий' : (isUA ? 'Вакансій' : (isDE ? 'Stellen' : 'Vacancies'));
+        const textTrend = isRU ? 'Тренд' : (isUA ? 'Тренд' : (isDE ? 'Trend' : 'Trend'));
+        const titleY = isRU ? 'Количество вакансий' : (isUA ? 'Кількість вакансій' : (isDE ? 'Anzahl der Stellen' : 'Number of vacancies'));
+
+        const xs = ['26.10.2026', '02.11.2026', '04.11.2026'];
+        const ys = [1126, 1262, 1334];
+        const traceBars = { x: xs, y: ys, type: 'bar', width: [0.45, 0.45, 0.45], marker: { color: ['#93c5fd', '#8b5cf6', '#10b981'], line: { color: ['#1f77b4', '#6d28d9', '#047857'], width: 2 } }, hovertemplate: '<b>%{x}</b><br>' + textVac + ': %{y}<extra></extra>', name: textVac };
+        const traceDelta = { x: xs, y: ys, type: 'scatter', mode: 'lines+markers', line: { color: '#10b981', width: 3, dash: 'dot' }, marker: { size: 10, color: '#10b981', line: { color: '#fff', width: 2 } }, hovertemplate: '<b>%{x}</b><br>' + textTrend + ': %{y}<extra></extra>', name: textTrend };
+        
+        const dynLayout = Object.assign({}, baseLayout, {
+            margin: { l: 60, r: 30, t: 50, b: 50 }, yaxis: { title: titleY, gridcolor: '#e2e8f0', range: [0, 1800] }, xaxis: { tickfont: { size: 14, weight: 600 } }, showlegend: false,
+            annotations: [
+                { x: xs[0], y: ys[0], text: '1 126', showarrow: false, yshift: 15, font: { size: 16, weight: 700, color: '#1e293b' } },
+                { x: xs[1], y: ys[1], text: '1 262', showarrow: false, yshift: 15, font: { size: 16, weight: 700, color: '#1e293b' } },
+                { x: xs[2], y: ys[2], text: '1 334', showarrow: false, yshift: 15, font: { size: 16, weight: 700, color: '#1e293b' } },
+                { x: '02.11.2026', y: 1262, text: '+136 (+12,1%)', showarrow: true, arrowhead: 2, ax: 0, ay: -40, font: { size: 14, weight: 700, color: '#047857' } },
+                { x: '04.11.2026', y: 1334, text: '+208 (+18,5%)', showarrow: true, arrowhead: 2, ax: 0, ay: -40, font: { size: 14, weight: 700, color: '#047857' } }
+            ]
+        });
+        Plotly.react('plotly-dynamics', [traceBars, traceDelta], dynLayout, { responsive: true, displayModeBar: false });
+    }
+
+    // --- 6.4 СДВИГИ (СЛАЙД 21) ---
+    const shiftEl = document.getElementById('plotly-shifts');
+    if (shiftEl) {
+        const titleX = isRU ? 'Условная сила сигнала (0–100%)' : (isUA ? 'Умовна сила сигналу (0–100%)' : (isDE ? 'Bedingte Signalstärke (0-100%)' : 'Conditional signal strength (0-100%)'));
+        
+        const labels = isRU ? ['Agentic AI / LLM-роли', 'Инфраструктура (MLOps, DevOps+AI)', 'Low-Code / Power Platform', 'Quereinsteiger-вакансии', 'Finance-AI / контроллинг']
+                           : (isUA ? ['Agentic AI / LLM-ролі', 'Інфраструктура (MLOps, DevOps+AI)', 'Low-Code / Power Platform', 'Quereinsteiger-вакансії', 'Finance-AI / контролінг']
+                                   : (isDE ? ['Agentic AI / LLM-Rollen', 'Infrastruktur (MLOps, DevOps+AI)', 'Low-Code / Power Platform', 'Quereinsteiger-Stellen', 'Finance-AI / Controlling']
+                                           : ['Agentic AI / LLM roles', 'Infrastructure (MLOps, DevOps+AI)', 'Low-Code / Power Platform', 'Quereinsteiger vacancies', 'Finance-AI / controlling']));
+        
+        const strength = [88, 78, 72, 65, 60];
+        const colors = ['#8b5cf6', '#1f77b4', '#3b82f6', '#10b981', '#f59e0b'];
+        const shiftData = [{ x: strength, y: labels, type: 'bar', orientation: 'h', marker: { color: colors, line: { color: '#fff', width: 1 } }, text: strength.map(v => v + '%'), textposition: 'outside', textfont: { size: 14, weight: 700, color: '#1e293b' }, hovertemplate: '<b>%{y}</b><br>%{x}%<extra></extra>' }];
+        const shiftLayout = Object.assign({}, baseLayout, { xaxis: { title: titleX, gridcolor: '#e2e8f0', range: [0, 105] }, yaxis: { automargin: true, tickfont: { size: 13, weight: 600 } }, margin: { l: 240, r: 50, t: 20, b: 50 }, showlegend: false });
+        Plotly.react('plotly-shifts', shiftData, shiftLayout, { responsive: true, displayModeBar: false });
+    }
+
+    // --- 6.5 ЗАРПЛАТЫ (СЛАЙД 22) ---
+    const salEl = document.getElementById('plotly-salary');
+    if (salEl) {
+        const titleY = isRU ? 'Зарплата, тыс. € / год' : (isUA ? 'Зарплата, тис. € / рік' : (isDE ? 'Gehalt, Tsd. € / Jahr' : 'Salary, k € / year'));
+        const textLow = isRU ? 'Нижняя граница' : (isUA ? 'Нижня межа' : (isDE ? 'Untere Grenze' : 'Lower bound'));
+        const textHigh = isRU ? 'Верхняя граница' : (isUA ? 'Верхня межа' : (isDE ? 'Obere Grenze' : 'Upper bound'));
+
+        const grades = ['Junior / Specialist', 'Middle', 'Senior', 'Leadership'];
+        const low  = [34.8, 50, 60, 100];
+        const high = [40,   65, 80, 150];
+        const mids = grades.map((_, i) => (low[i] + high[i]) / 2);
+
+        const salData = [
+            { x: grades, y: mids, type: 'bar', width: 0.35, marker: { color: 'rgba(31,119,180,0.15)' }, hoverinfo: 'skip', showlegend: false },
+            { x: grades, y: low, type: 'scatter', mode: 'markers', marker: { size: 0, color: 'rgba(0,0,0,0)' }, hoverinfo: 'skip', showlegend: false },
+            { x: grades, y: high, type: 'scatter', mode: 'markers', marker: { size: 0, color: 'rgba(0,0,0,0)' }, hoverinfo: 'skip', showlegend: false },
+            { x: grades, y: high, type: 'scatter', mode: 'markers+text', marker: { size: 14, color: '#8b5cf6', line: { color: '#fff', width: 2 } }, text: high.map(v => v + ' k€'), textposition: 'top center', textfont: { size: 12, weight: 700, color: '#6d28d9' }, hovertemplate: '<b>%{x}</b><br>' + textHigh + ': %{y} k€<extra></extra>', name: textHigh },
+            { x: grades, y: low, type: 'scatter', mode: 'markers+text', marker: { size: 14, color: '#1f77b4', line: { color: '#fff', width: 2 } }, text: low.map(v => v + ' k€'), textposition: 'bottom center', textfont: { size: 12, weight: 700, color: '#1e40af' }, hovertemplate: '<b>%{x}</b><br>' + textLow + ': %{y} k€<extra></extra>', name: textLow }
+        ];
+        const salLayout = Object.assign({}, baseLayout, {
+            yaxis: { title: titleY, gridcolor: '#e2e8f0', range: [0, 170] }, xaxis: { tickfont: { size: 13, weight: 600 } }, showlegend: false,
+            shapes: grades.map((g, i) => ({ type: 'line', x0: i, x1: i, y0: low[i], y1: high[i], line: { color: '#cbd5e1', width: 6, dash: 'dot' } }))
+        });
+        Plotly.react('plotly-salary', salData, salLayout, { responsive: true, displayModeBar: false });
+    }
+
+    // --- 6.6 РАДАР (СЛАЙД 23) ---
+    const radEl = document.getElementById('plotly-radar');
+    if (radEl) {
+        const categories = isRU ? ['Объём', 'Глубина', 'Инженерия', 'Отрасли', 'Вход']
+                               : (isUA ? ['Обсяг', 'Глибина', 'Інженерія', 'Галузі', 'Вхід']
+                                       : (isDE ? ['Volumen', 'Tiefe', 'Engineering', 'Branchen', 'Eintritt']
+                                               : ['Volume', 'Depth', 'Engineering', 'Industries', 'Entry']));
+                                       
+        const hoverNames = isRU ? ['Объём рынка', 'Глубина спроса', 'Инженерность', 'Проникновение в отрасли', 'Доступность входа']
+                                : (isUA ? ['Обсяг ринку', 'Глибина попиту', 'Інженерність', 'Проникнення в галузі', 'Доступність входу']
+                                        : (isDE ? ['Marktvolumen', 'Nachfragetiefe', 'Technizität', 'Branchendurchdringung', 'Eintrittszugänglichkeit']
+                                                : ['Market volume', 'Demand depth', 'Engineering level', 'Industry penetration', 'Entry accessibility']));
+
+        const prev = [70, 62, 55, 58, 50];
+        const curr = [85, 80, 74, 72, 78];
+        const third = [92, 84, 78, 76, 82];
+
+        const radData = [
+            { type: 'scatterpolar', r: prev.concat([prev[0]]), theta: categories.concat([categories[0]]), text: hoverNames.concat([hoverNames[0]]), fill: 'toself', fillcolor: 'rgba(148, 163, 184, 0.12)', line: { color: '#94a3b8', width: 2, dash: 'dot' }, marker: { size: 6, color: '#94a3b8' }, name: '26.10.2026', hovertemplate: '<b>%{text}</b><br>26.10: %{r}<extra></extra>' },
+            { type: 'scatterpolar', r: curr.concat([curr[0]]), theta: categories.concat([categories[0]]), text: hoverNames.concat([hoverNames[0]]), fill: 'toself', fillcolor: 'rgba(139, 92, 246, 0.22)', line: { color: '#8b5cf6', width: 3 }, marker: { size: 8, color: '#8b5cf6' }, name: '02.11.2026', hovertemplate: '<b>%{text}</b><br>02.11: %{r}<extra></extra>' },
+            { type: 'scatterpolar', r: third.concat([third[0]]), theta: categories.concat([categories[0]]), text: hoverNames.concat([hoverNames[0]]), fill: 'toself', fillcolor: 'rgba(16, 185, 129, 0.20)', line: { color: '#10b981', width: 3 }, marker: { size: 8, color: '#10b981' }, name: '04.11.2026', hovertemplate: '<b>%{text}</b><br>04.11: %{r}<extra></extra>' }
+        ];
+        const radLayout = {
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { family: 'Inter, sans-serif', size: 14, color: '#1e293b' },
+            polar: { bgcolor: '#ffffff', radialaxis: { visible: true, range: [0, 100], showticklabels: false, showline: false, gridcolor: '#cbd5e1' }, angularaxis: { gridcolor: '#cbd5e1', linecolor: '#cbd5e1', tickfont: { size: 14, weight: 700, color: '#334155' } } },
+            legend: { orientation: 'h', y: -0.15, x: 0.5, xanchor: 'center', font: { size: 13, weight: 600 } }, margin: { l: 80, r: 80, t: 40, b: 40 }, showlegend: true
+        };
+        Plotly.react('plotly-radar', radData, radLayout, { responsive: true, displayModeBar: false });
+    }
+}
+</script>
+</body>
+</html>
